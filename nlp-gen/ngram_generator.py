@@ -4,10 +4,10 @@ ngram_generator.py
 Generates dictionary containing (2<k<=n)-gram distributions for post files in the current directory.
 """
 
-import nltk, os, time, itertools, pickle
+import nltk, os, time, itertools, pickle, re
 from collections import defaultdict, Counter
 
-def makeNgrams(filename, words, n):
+def makeNgrams(filename, words, starts, n):
     """
     Generate n-grams from corpus
     Returns a dictionary of k-grams (from 2 to nth degree)
@@ -27,7 +27,14 @@ def makeNgrams(filename, words, n):
             kgrams[key].update({kgram[-1]})
         ngrams[k] = kgrams
         print ('finish gen ', k, 'grams at ', time.time()-start_time)
+
+    # Store clause starts in ngrams[STARTS]
+    ngrams['STARTS'] = starts
+
     pickle.dump(ngrams, open(filename, 'wb'))
+
+def getStarts(post_content):
+    return re.findall(r'(?:^|(?:[.!?]\s))(\w+)', post_content)
 
 if __name__ == '__main__':
 
@@ -41,7 +48,8 @@ if __name__ == '__main__':
     for filename, infile in dataset_dict.items():
         filename = filename + ".pickle"
         words = nltk.word_tokenize(infile)
-        ngrams = makeNgrams(filename, words, 8)
+        starts = getStarts(infile)
+        ngrams = makeNgrams(filename, words, starts, 8)
         
 
 
