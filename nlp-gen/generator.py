@@ -22,11 +22,8 @@ class sentGenerator(object):
         if isinstance(ngrams, dict):
             self.ngrams = ngrams
     
-    def __call__(self, repetition=10, seed='The'): 
-        # if not seed:
-        #     print(self.ngrams[2])
-        #     seed = random.choice(self.ngrams[2].keys())
-        sentlen = 10          
+    def __call__(self, repetition=7, seed='The'): 
+        sentlen = 7
         return self.__generateSentences(self.ngrams, n, sentlen,
                                          repetition, seed)
 
@@ -77,7 +74,7 @@ class sentGenerator(object):
             prev = ' '.join(sent[-k+1:])
 
             weightedChoices = [(candidate, weight) for (candidate, weight) 
-                                in ngrams[k][prev].most_common(10)]
+                                in ngrams[k][prev].most_common(20)]
             
             # Choose next candidate word based on a cumulative weight distribution
             choices, weights = zip(*weightedChoices)
@@ -106,5 +103,4 @@ class sentGenerator(object):
             sent += self.__markovGen(self.ngrams, n, length, seed)
             sent += ' '
         return sent
-
 
