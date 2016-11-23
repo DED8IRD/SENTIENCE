@@ -10,10 +10,8 @@ on conditional frequency distributions of n-grams found in the text, with
 import nltk, random, itertools, bisect, time
 from collections import defaultdict, Counter
 
-TERMINAL_PUNCT = ['.', '!', '?', '\n\n']
-SPLIT_PUNCT = [',', ';']
+CLAUSE_TERMINALS = ['.', '!', '?', '\n\n']
 CLAUSE_STARTS = ['The']
-CLAUSE_TERMINALS = TERMINAL_PUNCT + SPLIT_PUNCT
 STOPWORDS = nltk.corpus.stopwords.words('english')
 n = 8
 
@@ -25,8 +23,8 @@ class sentGenerator(object):
             CLAUSE_STARTS.extend(ngrams['STARTS'])
     
     def __call__(self, seed=None): 
-        sentlen = 7
-        repetition = 7
+        sentlen = random.randint(7,25)
+        repetition = random.randint(1,3)
         if not seed:
             seed = random.choice(CLAUSE_STARTS)
         return self.__generateSentences(self.ngrams, n, sentlen,
