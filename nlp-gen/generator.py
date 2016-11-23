@@ -24,7 +24,7 @@ class sentGenerator(object):
     
     def __call__(self, seed=None): 
         sentlen = random.randint(7,25)
-        repetition = random.randint(1,3)
+        repetition = random.randint(1,4)
         if not seed:
             seed = random.choice(CLAUSE_STARTS)
         return self.__generateSentences(self.ngrams, n, sentlen,
