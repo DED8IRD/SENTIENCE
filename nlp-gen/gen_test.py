@@ -10,6 +10,6 @@ if __name__ == '__main__':
     print ('LOADED ' + str(time.time()-start_time) + ' sec')    
     with open('generated.out', 'a') as gen_out:
 	    gen = sentGenerator(ngrams)
-	    gen_out.write(gen()+'\n')
-	    print ('finish gen at ', time.time()-start_time)
+	    gen_out.write(gen().encode('utf-8')+'\n')
+	    print ('finish gen at ' + str(time.time()-start_time))
 
