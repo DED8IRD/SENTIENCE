@@ -48,10 +48,8 @@ if __name__ == '__main__':
                     if not re.match(r'^.* .* .*:', post) \
                         and not re.search(r'The Meme Games', post) \
                         and not re.search(r'Surface Reality', post) \
-                        and not re.search(r'surface reality', post) \
                         and not re.search(r'The Epic Department', post) \
                         and not re.search(r'The Content Zone', post) \
                         and not re.search(r'Kevin 3', post) \
-                        and not re.search(r'End Of Context 2', post) \
                         and not re.search(r'The Needle Drop', post):
                             output.write(post + '\n\n')
