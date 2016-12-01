@@ -7,6 +7,31 @@ transparencies.
 import random, os
 from PIL import Image, ImageFilter
 
+def resize(img, bkgd, ratio):
+    img.thumbnail( (int(ratio*bkgd.width), \
+                    int(ratio*bkgd.height)), \
+                    Image.ANTIALIAS )
+
+
+def alter_opacity(img):
+    opacity = random.triangular(0, 1, 0.9)
+    bands = list(img.split())
+    if len(bands) == 4:
+        bands[3]= bands[3].point(lambda x: x*opacity)
+        return Image.merge(img.mode, bands)
+    return img
+
+
+def paste_image(base, img, ratio):
+    try:
+        base.paste(img, (random.randint(0,base.width-int(ratio*img.width)), \
+                         random.randint(0,base.height-int(ratio*img.height))),\
+                         img)
+    except ValueError:
+        base.paste(img, (random.randint(0,base.width-int(ratio*img.width)), \
+                         random.randint(0,base.height-int(ratio*img.height))))
+
+
 if __name__ == '__main__':
 
     max_size = (1080, 1080)
@@ -20,49 +45,22 @@ if __name__ == '__main__':
     for i in range(random.randint(0,2)):
         back_overlay = Image.open( "src/back overlays/" \
                      + random.choice(os.listdir("src/back overlays")) )
-        back_overlay.thumbnail((random.randint(2,5)*bkgd.width/5, \
-                                random.randint(2,5)*bkgd.height/5), \
-                                Image.ANTIALIAS)
-        try:
-            bkgd.paste(back_overlay, \
-                (random.randint(0, bkgd.width-1.5*back_overlay.width//2), \
-                 random.randint(0, bkgd.height-1.5*back_overlay.height//2)),\
-                 back_overlay)
-        except ValueError:
-            bkgd.paste(back_overlay, \
-                (random.randint(0, bkgd.width-1.5*back_overlay.width//2), \
-                 random.randint(0, bkgd.height-1.5*back_overlay.height//2)))
+        resize(back_overlay, bkgd, random.uniform(2,5)/5)
+        back_overlay = alter_opacity(back_overlay)
+        paste_image(bkgd, back_overlay, 1.5/2)
 
     for i in range(random.randint(1,2)):
         overlay = Image.open( "src/" + random.choice(os.listdir("src")) )
-        overlay.thumbnail((random.randint(2,5)*bkgd.width/5, \
-                           random.randint(2,5)*bkgd.height/5), \
-                           Image.ANTIALIAS)
-        try:
-            bkgd.paste(overlay, \
-                      (random.randint(0, bkgd.width-overlay.width), \
-                       random.randint(0, bkgd.height-overlay.height)), \
-                       overlay)
-        except ValueError:
-            bkgd.paste(overlay, \
-                      (random.randint(0, bkgd.width-overlay.width), \
-                       random.randint(0, bkgd.height-overlay.height)))
+        resize(overlay, bkgd, random.uniform(1,4)/5)
+        overlay = alter_opacity(overlay)
+        paste_image(bkgd, overlay, 1)
 
     for i in range(random.randint(0,4)):
         vector = Image.open( "src/vectors/" \
                             + random.choice(os.listdir("src/vectors")) )
-        vector.thumbnail((bkgd.width/random.randint(2,5), \
-                          bkgd.height/random.randint(2,5)), \
-                          Image.ANTIALIAS)
-        try:
-            bkgd.paste(vector, \
-                      (random.randint(0, bkgd.width-1.5*vector.width//2), \
-                       random.randint(0, bkgd.height-1.5*vector.height//2)),\
-                       vector)
-        except ValueError: 
-            bkgd.paste(vector, \
-                      (random.randint(0, bkgd.width-1.5*vector.width//2), \
-                       random.randint(0, bkgd.height-1.5*vector.height//2)))
+        resize(vector, bkgd, 1/random.uniform(1,4))
+        vector = alter_opacity(vector)
+        paste_image(bkgd, vector, 1.5/2)
 
     bkgd.show() # Uncomment to show preview
     try:
