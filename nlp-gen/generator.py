@@ -15,7 +15,7 @@ CLAUSE_TERMINALS = ['.', '!', '?', '\n\n', u'\U0000FFFF']
 CLAUSE_STARTS = ['The']
 STOPWORDS = nltk.corpus.stopwords.words('english')
 MAX_LEN = 25
-n = 8
+MAX_N = 8
 
 class sentGenerator(object):
 
@@ -29,8 +29,8 @@ class sentGenerator(object):
         repetition = random.randint(1,4)
         if not seed:
             seed = random.choice(CLAUSE_STARTS)
-        return self.__generateSentences(self.ngrams, n, sentlen,
-                                         repetition, seed)
+        return self.__generateSentences(self.ngrams, random.randint(5,MAX_N), \
+                                        sentlen, repetition, seed)
 
     # Accumulator since itertools.accumulate does not exist in py27
     def __accumulate(self, iterator):
@@ -91,7 +91,7 @@ class sentGenerator(object):
             i +=1
             
         ret = ' '.join(sent)
-        cleanPunct = CLAUSE_TERMINALS + ['\'','n\'t','N\'T','na','\,',':',')']
+        cleanPunct = CLAUSE_TERMINALS + ['\'','n\'t','N\'T','na',',',':',')']
         for punct in cleanPunct:
             ret = ret.replace(' %s' % punct, punct)
         ret = ret.replace('%s' % u'\U0000FFFF', '')
