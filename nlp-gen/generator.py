@@ -7,7 +7,8 @@ on conditional frequency distributions of n-grams found in the text, with
 (1<k<n) fallback k-grams.
 '''
 
-import nltk, random, itertools, bisect, time
+from __future__ import unicode_literals
+import nltk, random, bisect, time
 from collections import defaultdict, Counter
 
 CLAUSE_TERMINALS = ['.', '!', '?', '\n\n']
@@ -23,12 +24,19 @@ class sentGenerator(object):
             CLAUSE_STARTS.extend(ngrams['STARTS'])
     
     def __call__(self, seed=None): 
-        sentlen = random.randint(7,25)
+        sentlen = random.randint(7,15)
         repetition = random.randint(1,4)
         if not seed:
             seed = random.choice(CLAUSE_STARTS)
         return self.__generateSentences(self.ngrams, n, sentlen,
                                          repetition, seed)
+
+    # Accumulator since itertools.accumulate does not exist in py27
+    def __accumulate(self, iterator):
+        total = 0
+        for item in iterator:
+            total += item
+            yield total
 
     # Generates sentences using a n degree Markov model
     def __markovGen(self, ngrams, n, length, start):
@@ -47,21 +55,30 @@ class sentGenerator(object):
                 Randomly chosen if not specified
         """
         sent = [start]
-        prev = start
+        prev = start.encode('utf-8')
         for i in range(length):
             k = len(sent)+1 if len(sent)+1 < n else n
-            while not ngrams[k][prev] and k > 2:
-                k -= 1
-            prev = ' '.join(sent[-k+1:])
+            try:
+                ngrams[str(k)][prev]
+            except KeyError:     
+                if k > 2:
+                    k -= 1
+            prev = ' '.join(sent[-k+1:]).encode('utf-8')
+            try:
+                if isinstance(ngrams[str(k)][prev], dict):
+                    ngrams[str(k)][prev] = Counter(ngrams[str(k)][prev])
+            except KeyError:
+                print('KeyError')
+                break
 
             weightedChoices = [(candidate, weight) for (candidate, weight) 
-                                in ngrams[k][prev].most_common(20)]
+                                in ngrams[str(k)][prev].most_common(20)]
             
             # Choose next candidate word based on a cumulative weight distribution
             choices, weights = zip(*weightedChoices)
-            cumdist = list(itertools.accumulate(weights))
-            choice = random.random() * cumdist[-1]
-            next = choices[bisect.bisect(cumdist, choice)]
+            cum_weight = list(self.__accumulate(weights))
+            choice = random.random() * cum_weight[-1]
+            next = choices[bisect.bisect(cum_weight, choice)]
             sent.append(next)
 
             # End sentences at clause terminals
@@ -70,7 +87,7 @@ class sentGenerator(object):
                 break
             
         ret = ' '.join(sent)
-        cleanPunct = CLAUSE_TERMINALS + ['\'','n\'t',':',')']
+        cleanPunct = CLAUSE_TERMINALS + ['\'','n\'t','N\'T','na','\,',':',')']
         for punct in cleanPunct:
             ret = ret.replace(' %s' % punct, punct)
         ret = ret.replace('%s ' % '(', '(')

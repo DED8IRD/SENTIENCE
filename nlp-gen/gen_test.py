@@ -1,13 +1,15 @@
-import nltk, os, time, itertools, pickle, re, random
-from collections import defaultdict, Counter
+import time, json
 from generator import sentGenerator 
 
 if __name__ == '__main__':
 
     start_time = time.time()
-    ngrams = pickle.load(open('post_compilation.txt.pickle', 'rb'))
-    gen_out = open('generated.out', 'a')
-    gen = sentGenerator(ngrams)
-    print(gen(), file=gen_out)
-    print ('finish gen at ', time.time()-start_time)
+    print ('LOADING JSON...')
+    with open('post_compilation.json', 'r') as post_comp:
+	    ngrams = json.load(post_comp)
+    print ('LOADED ' + str(time.time()-start_time) + ' sec')    
+    with open('generated.out', 'a') as gen_out:
+	    gen = sentGenerator(ngrams)
+	    gen_out.write(gen()+'\n')
+	    print ('finish gen at ', time.time()-start_time)
 
