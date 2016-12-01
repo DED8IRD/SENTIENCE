@@ -52,4 +52,6 @@ if __name__ == '__main__':
                         and not re.search(r'The Content Zone', post) \
                         and not re.search(r'Kevin 3', post) \
                         and not re.search(r'The Needle Drop', post):
-                            output.write(post + '\n\n')
+                            # To deal with non-punctuated post ends we insert
+                            # a special unicode marker
+                            output.write(post + u'\U0000FFFF\n')

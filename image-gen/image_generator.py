@@ -65,7 +65,11 @@ if __name__ == '__main__':
                        random.randint(0, bkgd.height-1.5*vector.height//2)))
 
     bkgd.show() # Uncomment to show preview
-    filename = max([int(files.split('.')[0]) \
-                    for files in os.listdir(".") if files.endswith('.png')])
+    try:
+        filename = max([int(files.split('.')[0]) \
+                        for files in os.listdir(".") if files.endswith('.png')])
+    except ValueError:
+        filename = 0
+
     filename += 1
     bkgd.save(str(filename)+".png", "PNG")

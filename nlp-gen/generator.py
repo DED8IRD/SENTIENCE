@@ -11,9 +11,10 @@ from __future__ import unicode_literals
 import nltk, random, bisect, time
 from collections import defaultdict, Counter
 
-CLAUSE_TERMINALS = ['.', '!', '?', '\n\n']
+CLAUSE_TERMINALS = ['.', '!', '?', '\n\n', u'\U0000FFFF']
 CLAUSE_STARTS = ['The']
 STOPWORDS = nltk.corpus.stopwords.words('english')
+MAX_LEN = 25
 n = 8
 
 class sentGenerator(object):
@@ -24,7 +25,7 @@ class sentGenerator(object):
             CLAUSE_STARTS.extend(ngrams['STARTS'])
     
     def __call__(self, seed=None): 
-        sentlen = random.randint(7,15)
+        sentlen = random.randint(4,10)
         repetition = random.randint(1,4)
         if not seed:
             seed = random.choice(CLAUSE_STARTS)
@@ -56,7 +57,10 @@ class sentGenerator(object):
         """
         sent = [start]
         prev = start.encode('utf-8')
-        for i in range(length):
+        i = 1
+        while not (i > range(length) and sent[-1] not in CLAUSE_TERMINALS) \
+              or i < MAX_LEN:
+
             k = len(sent)+1 if len(sent)+1 < n else n
             try:
                 ngrams[str(k)][prev]
@@ -68,11 +72,10 @@ class sentGenerator(object):
                 if isinstance(ngrams[str(k)][prev], dict):
                     ngrams[str(k)][prev] = Counter(ngrams[str(k)][prev])
             except KeyError:
-                print('KeyError')
                 break
 
             weightedChoices = [(candidate, weight) for (candidate, weight) 
-                                in ngrams[str(k)][prev].most_common(20)]
+                                in ngrams[str(k)][prev].most_common(25)]
             
             # Choose next candidate word based on a cumulative weight distribution
             choices, weights = zip(*weightedChoices)
@@ -83,13 +86,15 @@ class sentGenerator(object):
 
             # End sentences at clause terminals
             if sent[-1] in CLAUSE_TERMINALS:
-                sent.append('')
                 break
+
+            i +=1
             
         ret = ' '.join(sent)
         cleanPunct = CLAUSE_TERMINALS + ['\'','n\'t','N\'T','na','\,',':',')']
         for punct in cleanPunct:
             ret = ret.replace(' %s' % punct, punct)
+        ret = ret.replace('%s' % u'\U0000FFFF', '')
         ret = ret.replace('%s ' % '(', '(')
         return ret
 
@@ -100,7 +105,8 @@ class sentGenerator(object):
         randInt = random.randint(1, repetition)
         sent = ''
         for i in range(randInt):
-            sent += self.__markovGen(self.ngrams, n, length, seed)
-            sent += ' '
+            if len(sent) < MAX_LEN:
+                sent += self.__markovGen(self.ngrams, n, length, seed)
+                sent += ' '
         return sent
 
