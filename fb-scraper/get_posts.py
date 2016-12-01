@@ -46,6 +46,7 @@ if __name__ == '__main__':
                 if len(post) > 0:
                     # To deal with page quote prevalence
                     if not re.match(r'^.* .* .*:', post) \
+                        and not re.search(r'The Great Gatsby by F. Scott Fitzgerald', post) \
                         and not re.search(r'The Meme Games', post) \
                         and not re.search(r'Surface Reality', post) \
                         and not re.search(r'The Epic Department', post) \
@@ -54,4 +55,5 @@ if __name__ == '__main__':
                         and not re.search(r'The Needle Drop', post):
                             # To deal with non-punctuated post ends we insert
                             # a special unicode marker
-                            output.write(post + u'\U0000FFFF\n')
+                            for line in post.split('\n'):
+                                output.write(line + u'\U0000FFFF\n')

@@ -27,9 +27,10 @@ class sentGenerator(object):
     def __call__(self, seed=None): 
         sentlen = random.randint(4,10)
         repetition = random.randint(1,4)
+        n = random.randint(5,MAX_N)     # Randomize n to prevent overfitting
         if not seed:
             seed = random.choice(CLAUSE_STARTS)
-        return self.__generateSentences(self.ngrams, random.randint(5,MAX_N), \
+        return self.__generateSentences(self.ngrams, n, \
                                         sentlen, repetition, seed)
 
     # Accumulator since itertools.accumulate does not exist in py27
@@ -59,7 +60,7 @@ class sentGenerator(object):
         prev = start.encode('utf-8')
         i = 1
         while not (i > range(length) and sent[-1] not in CLAUSE_TERMINALS) \
-              or i < MAX_LEN:
+              and i < MAX_LEN:
 
             k = len(sent)+1 if len(sent)+1 < n else n
             try:
