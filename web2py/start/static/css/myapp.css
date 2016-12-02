@@ -35,6 +35,11 @@ body {
   z-index: -100;
 }
 
+.navbar-title {
+  font-size: 20px;
+  margin-top: -3px;
+}
+
 .statue_layer {
   position: fixed;
   background-image: url("../images/layer.png");
