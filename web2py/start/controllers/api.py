@@ -1,16 +1,16 @@
-#from generator import sentGenerator
+from generator import sentGenerator
 import json
+import os
 
 
 def generate_text():
     """
     nlg text gen
     """
-    #temp = os.path
-    path = URL('static', 'json', 'post_compilation.json')
-    #with open(path, 'r') as post_comp:
-        #ngrams = json.load(post_comp)
-    gen = path#sentGenerator(ngrams)
+    file_path = os.path.join(request.folder, 'static', 'json', 'post_compilation.json')
+    with open(file_path) as post_comp:
+        ngrams = json.load(post_comp)
+    gen = file_path # sentGenerator(ngrams)
     return gen.encode('utf-8')
 
 
