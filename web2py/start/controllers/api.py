@@ -1,6 +1,7 @@
-from generator import sentGenerator
 import json
 import os
+
+from applications.start.modules.generator import sentGenerator
 
 
 def generate_text():
@@ -10,8 +11,13 @@ def generate_text():
     file_path = os.path.join(request.folder, 'static', 'json', 'post_compilation.json')
     with open(file_path) as post_comp:
         ngrams = json.load(post_comp)
-    gen = file_path # sentGenerator(ngrams)
-    return gen.encode('utf-8')
+    generated = (sentGenerator(ngrams))().encode('utf-8')
+
+    p_id = db.shitpost.insert(
+        text_post=generated
+    )
+    p = db.shitpost(p_id)
+    return response.json(dict(post=p))
 
 
 # These are the controllers for your ajax api.
@@ -24,11 +30,10 @@ def get_posts():
     # We just generate a lot of of data.
     posts = []
     has_more = False
-    rows = db().select(db.post.ALL, orderby=~db.post.created_on, limitby=(start_idx, end_idx + 1))
+    rows = db().select(db.shitpost.ALL, orderby=~db.shitpost.created_on, limitby=(start_idx, end_idx + 1))
     for i, r in enumerate(rows):
         if i < end_idx - start_idx:
-            p = get_post_output(r)
-            posts.append(p)
+            posts.append(r)
         else:
             has_more = True
     logged_in = auth.user_id is not None

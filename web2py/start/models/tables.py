@@ -10,8 +10,9 @@
 import datetime
 
 db.define_table('shitpost',
-                Field('image_url', 'text'),
-                Field('upvotes', 'integer'),
+                Field('text_post', 'text', default=''),
+                Field('image_url', 'text', default=''),
+                Field('upvotes', 'integer', default=0),
                 Field('created_on', 'datetime', default=datetime.datetime.utcnow())
                 )
 

@@ -14,23 +14,13 @@
 
 <div class="main_content">
     <div id="vue-div" class="display:none">
-        <a v-on:click="generate_text();">hi</a>
+        <a class="SHITPOSTBUTTON" v-on:click="generate_text();">Generate Shitpost</a>
         <div class="posts">
             <div v-for="post, index in posts" class="post-content" :key="post.id">
-                <p class="post-contents">${post.post_content}</p>
+                <p class="post-contents">${post.text_post}</p>
 
                 <p class="info-line">
-                    ${post.user_name}
-                    &emsp;&emsp;${post.created_on}
-                    <span v-if="post.updated">
-                        &emsp;&emsp;${post.updated_on}
-                    </span>
-                    <span v-if="post.is_mine" class="shifted">
-                        <i class="fa fa-pencil" v-on:click="edit_post_button(post.id, post.post_content)"></i>
-                    </span>
-                    <span v-if="post.is_mine" class="shifted">
-                        <i class="fa fa-trash-o" v-on:click="delete_post(post.id)"></i>
-                    </span>
+                    ${post.created_on}
                 </p>
             </div>
             <p v-if="has_more" class="show_more post-contents"> Loading more content... </p>

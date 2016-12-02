@@ -13,7 +13,6 @@ from collections import defaultdict, Counter
 
 CLAUSE_TERMINALS = ['.', '!', '?', '\n\n', u'\U0000FFFF']
 CLAUSE_STARTS = ['The']
-STOPWORDS = nltk.corpus.stopwords.words('english')
 MAX_LEN = 25
 MAX_N = 8
 

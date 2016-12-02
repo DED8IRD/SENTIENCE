@@ -123,7 +123,7 @@ var app = function() {
         // The submit button to add a post has been added.
         $.get(generate_text_url,
             function (data) {
-                alert(data);
+                self.vue.posts.unshift(data.post);
             });
     };
 
@@ -160,7 +160,7 @@ var app = function() {
 
     self.vue.infini_scroll_enabled = true;
 
-    //self.get_posts();
+    self.get_posts();
     $("#vue-div").show();
 
     return self;
