@@ -53,6 +53,19 @@ def edit_post():
     db(db.post.id == request.vars.post_id).update(post_content = request.vars.post_content)
     return "{0}{1}".format("Edited On ", post.updated_on)
 
+from generator import sentGenerator
+import json
+
+def generate_text():
+    """
+    nlg text gen
+    """
+    with open(URL('static', 'json', 'post_compilation.json'), 'r') as post_comp:
+        ngrams = json.load(post_comp)
+    with open('generated.out', 'a') as gen_out:
+        gen = sentGenerator(ngrams)
+        return gen().encode('utf-8')
+
 
 # Utility functions
 def get_user_name_from_email(email):

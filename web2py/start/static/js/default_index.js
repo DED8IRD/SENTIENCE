@@ -110,7 +110,6 @@ var app = function() {
     self.infini_scroll = function() {
         var bottom = $(document).height()-$(window).height() - $(window).scrollTop();
         var check = bottom < 50;
-        console.log(bottom);
         if (check && self.vue.has_more) {
             if (self.vue.infini_scroll_enabled) {
                 self.vue.infini_scroll_enabled = false;
@@ -118,6 +117,10 @@ var app = function() {
             }
             setTimeout(function(){self.infini_scroll();}, 500);
         }
+    };
+
+    self.generate_text = function() {
+        alert("test");
     };
 
     self.vue = new Vue({
@@ -142,12 +145,11 @@ var app = function() {
             edit_post: self.edit_post,
             delete_post: self.delete_post,
             infini_scroll: self.infini_scroll,
+            generate_text: self.generate_text()
         }
 
     });
 
-    self.get_posts();
-    $("#vue-div").show();
 
     $(window).scroll(self.infini_scroll);
     $(window).resize(self.infini_scroll);

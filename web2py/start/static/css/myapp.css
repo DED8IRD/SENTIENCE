@@ -35,26 +35,12 @@ body {
   z-index: -100;
 }
 
-.navbar-title {
+.navbar-tab {
   font-size: 20px;
-  margin-top: -3px;
-}
-
-.statue_layer {
-  position: fixed;
-  background-image: url("../images/layer.png");
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  z-index: 0;
-  height: 80vh;
-  width: 100vw;
-  margin: auto;
-  margin-left: -30px;
+  letter-spacing: 10px;
+  font-family: "Share Tech Mono", "Courier";
+  padding-top: 22px;
+  padding-right: 16px;
 }
 
 .add-btn {

@@ -9,12 +9,17 @@
 
 import datetime
 
+db.define_table('shitpost',
+                Field('image_url', 'text'),
+                Field('upvotes', 'integer'),
+                Field('created_on', 'datetime', default=datetime.datetime.utcnow())
+                )
+
 db.define_table('post',
                 Field('user_email', default=auth.user.email if auth.user_id else None),
                 Field('post_content', 'text'),
                 Field('created_on', 'datetime', default=datetime.datetime.utcnow()),
                 Field('updated_on', 'datetime', update=datetime.datetime.utcnow()),
-
                 )
 
 # I don't want to display the user email by default in all forms.

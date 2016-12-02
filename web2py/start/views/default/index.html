@@ -7,57 +7,16 @@
     var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
     var edit_post_url = "{{=URL('api', 'edit_post', user_signature=True)}}";
     var del_post_url = "{{=URL('api', 'del_post', user_signature=True)}}";
+    var generate_text_url = "{{=URL('api', 'generate_text')}}";
 </script>
 {{end}}
 
 
 <div class="main_content">
     <div id="vue-div" class="display:none">
-        <div v-if="is_adding_post" id="add-new-post">
-            <form action="#" v-on:submit.prevent="add_post" class="form-horizontal" enctype="multipart/form-data" method="post">
-                <div class="form-group" id="no_table_post_content__row">
-                    <div>
-                        <input class="form-control string" id="no_table_post_content" v-model="form_post_content" placeholder="" type="textarea" />
-                        <span class="help-block"></span>
-                    </div>
-                </div>
-                <div class="form-group text-right">
-                    <div>
-                        <input class="btn btn-primary" id="post-button" type="submit" value="Post" v-on:click="add_post_button()"/>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div v-if="logged_in" class="button_bar text-right">
-            <button v-if="!is_adding_post" class="btn btn-danger btn-sm add-btn" v-on:click="add_post_button()" v-bind:class="{'disabled': !logged_in}">
-                Add new post
-            </button>
-            <button v-if="is_adding_post" class="btn btn-warning btn-sm cancel-btn" v-on:click="add_post_button()">
-                Cancel
-            </button>
-        </div>
-
+        <a>hi</a>
         <div class="posts">
             <div v-for="post, index in posts" class="post-content" :key="post.id">
-                <div v-if="editing_post == post.id">
-                    <form action="#" v-on:submit.prevent="edit_post(post.id, index)" class="form-horizontal" enctype="multipart/form-data" method="post">
-                        <div class="form-group">
-                            <div>
-                                <input class="form-control string" v-model="form_edit_post_content" type="textarea"/>
-                                <span class="help-block"></span>
-                            </div>
-                        </div>
-                        <div class="form-group text-right">
-                            <input class="btn btn-primary edit-post-button" type="submit" value="Post" v-on:click="edit_post_button(-1)"/>
-                        </div>
-                    </form>
-                    <div class="text-right">
-                        <button class="btn btn-warning btn-sm cancel-edit-btn" v-on:click="edit_post_button(-1)">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
                 <p class="post-contents" v-else>${post.post_content}</p>
 
                 <p class="info-line">

@@ -63,8 +63,8 @@
           <ul class="nav navbar-nav navbar-right">
             {{='auth' in globals() and auth.navbar('Welcome',mode='dropdown') or ''}}
           </ul>
-          <div class="nav navbar-nav navbar-right navbar-title">
-            <a class="navbar-title" href="{{=URL('default', 'contrib')}}">Contributors</a>
+          <div class="nav navbar-nav navbar-right navbar-tab">
+            <a class="" href="{{=URL('default', 'contrib')}}">Contributors</a>
           </div>
         </div>
       </div>
@@ -85,7 +85,7 @@
       {{pass}}
 
       <div class="{{=middle_column}}">
-        <img id="burd" class="hidden" src="{{=URL('static', 'images/burd.gif')}}"/>
+        <img id="burd" class="hidden" src="{{=URL('static', 'images', 'burd.gif')}}"/>
         <div class="statue_layer"></div>
         {{block center}}
         {{include}}
