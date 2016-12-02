@@ -10,8 +10,8 @@ def generate_text():
     file_path = os.path.join(request.folder, 'static', 'json', 'post_compilation.json')
     with open(file_path) as post_comp:
         ngrams = json.load(post_comp)
-    gen = file_path # sentGenerator(ngrams)
-    return gen.encode('utf-8')
+    gen = sentGenerator(ngrams)
+    return gen().encode('utf-8')
 
 
 # These are the controllers for your ajax api.
