@@ -5,7 +5,6 @@ Gets page ids from csvs.
 """    
 
 import os
-from collections import defaultdict
 
 if __name__ == '__main__':
     output = open("page_names", "w")

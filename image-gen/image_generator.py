@@ -5,7 +5,7 @@ Generates novel image through overlaying component images with varying
 transparencies.
 '''
 import random, os
-from PIL import Image, ImageFilter
+from PIL import Image
 
 def resize(img, bkgd, ratio):
     img.thumbnail( (int(ratio*bkgd.width), \
