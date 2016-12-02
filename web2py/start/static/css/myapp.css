@@ -1,0 +1,140 @@
+/* line 2, ../sass/_main.scss */
+.post_listing {
+  margin: 10px 0px 10px 0px;
+  padding: 0 0 0 0px;
+}
+
+/* line 7, ../sass/_main.scss */
+.post_list {
+  padding-top: 10px;
+}
+
+/* line 11, ../sass/_main.scss */
+
+.navbar-title{
+  padding: 10px;
+  padding-top: 25px;
+  font-size: 42px;
+  font-family: "Share Tech Mono", "Courier";
+  letter-spacing: 0px;
+}
+
+body {
+  background-image: url("../images/background.png");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+#burd {
+  position: fixed;
+  z-index: -100;
+}
+
+.statue_layer {
+  position: fixed;
+  background-image: url("../images/layer.png");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: 0;
+  height: 80vh;
+  width: 100vw;
+  margin: auto;
+  margin-left: -30px;
+}
+
+.add-btn {
+  margin-bottom: 32px;
+}
+
+.cancel-btn {
+  margin-top: -89px;
+  margin-right: -10px;
+  height: 38px;
+}
+
+#post-button {
+  margin-right: 90px;
+}
+
+#no_table_edit_post_content {
+  margin: 0px 0px 0px;
+}
+
+.cancel-edit-btn {
+  margin-top: -89px;
+  margin-right: 4px;
+  height: 38px;
+}
+
+.edit-post-button {
+  margin-right: 100px;
+}
+
+.show_more {
+  text-align: center;
+  margin: auto;
+}
+
+.posts {
+  margin-top: -32px;
+}
+
+.post-content {
+  border-width: 1px;
+  padding: 20px;
+  -moz-border-radius: 16px;
+  -webkit-border-radius: 16px;
+  border-radius: 16px;
+  width: 40%;
+  margin: 20px auto;
+}
+
+.post-contents {
+  color: #4afafc;
+  text-shadow: 1px 1px #ff67f2;
+  font-family: "Share Tech Mono", "Courier";
+  letter-spacing: 16px;
+  font-size: 24px;
+  font-weight: bold;
+
+}
+
+.info-line {
+  color: #4afafc;
+  text-shadow: 1px 1px #ff67f2;
+  font-family: "VT323", "Courier";
+  letter-spacing: 10px;
+  font-size: 20px;
+  margin-top: -5px;
+  margin-bottom: -10px;
+}
+
+.hidden {
+  display: none;
+}
+
+.shifted {
+  margin-left: 20px;
+}
+
+/* Login page */
+.login_title {
+  margin-left: 30%;
+  letter-spacing: 16px;
+  font-family: "Share Tech Mono", "Courier"
+}
+
+.login_container {
+  margin-left: 30%;
+  margin-right: 30%;
+}

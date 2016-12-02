@@ -1,0 +1,19 @@
+
+.post_listing {
+  margin: 10px 0px 10px 0px;
+  padding: 0 0 0 0px;
+}
+
+.post_list {
+  padding-top: 10px;
+}
+
+.post {
+  border-color: $clrPostBorder;
+  border-style: solid;
+  border-width: 1px;
+  background: $clrPostBackground;
+  margin: 20px 0px 20px 0px;
+  padding: 20px;
+  @include border-radius(16px);
+}
