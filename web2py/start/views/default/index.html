@@ -14,10 +14,10 @@
 
 <div class="main_content">
     <div id="vue-div" class="display:none">
-        <a>hi</a>
+        <a v-on:click="generate_text();">hi</a>
         <div class="posts">
             <div v-for="post, index in posts" class="post-content" :key="post.id">
-                <p class="post-contents" v-else>${post.post_content}</p>
+                <p class="post-contents">${post.post_content}</p>
 
                 <p class="info-line">
                     ${post.user_name}

@@ -120,7 +120,10 @@ var app = function() {
     };
 
     self.generate_text = function() {
-        alert("test");
+        $.getJSON(generate_text_url, function (data) {
+            alert("Hello");
+            alert(data);
+        });
     };
 
     self.vue = new Vue({
@@ -145,7 +148,7 @@ var app = function() {
             edit_post: self.edit_post,
             delete_post: self.delete_post,
             infini_scroll: self.infini_scroll,
-            generate_text: self.generate_text()
+            generate_text: self.generate_text
         }
 
     });
@@ -156,6 +159,8 @@ var app = function() {
 
     self.vue.infini_scroll_enabled = true;
 
+    //self.get_posts();
+    $("#vue-div").show();
 
     return self;
 };
