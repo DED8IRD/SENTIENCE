@@ -1,5 +1,17 @@
-from generator import sentGenerator
+#from generator import sentGenerator
 import json
+
+
+def generate_text():
+    """
+    nlg text gen
+    """
+    #temp = os.path
+    path = URL('static', 'json', 'post_compilation.json')
+    #with open(path, 'r') as post_comp:
+        #ngrams = json.load(post_comp)
+    gen = path#sentGenerator(ngrams)
+    return gen.encode('utf-8')
 
 
 # These are the controllers for your ajax api.
@@ -56,20 +68,6 @@ def edit_post():
         return "no"
     db(db.post.id == request.vars.post_id).update(post_content = request.vars.post_content)
     return "{0}{1}".format("Edited On ", post.updated_on)
-
-
-def generate_text():
-    """
-    nlg text gen
-    """
-    return "LOL"
-    """
-    with open(URL('static', 'json', 'post_compilation.json'), 'r') as post_comp:
-        ngrams = json.load(post_comp)
-    with open('generated.out', 'a') as gen_out:
-        gen = sentGenerator(ngrams)
-        return gen().encode('utf-8')
-      """
 
 
 # Utility functions

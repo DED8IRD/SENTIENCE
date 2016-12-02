@@ -119,11 +119,12 @@ var app = function() {
         }
     };
 
-    self.generate_text = function() {
-        $.getJSON(generate_text_url, function (data) {
-            alert("Hello");
-            alert(data);
-        });
+    self.generate_text = function () {
+        // The submit button to add a post has been added.
+        $.get(generate_text_url,
+            function (data) {
+                alert(data);
+            });
     };
 
     self.vue = new Vue({
