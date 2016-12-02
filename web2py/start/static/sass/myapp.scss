@@ -1,0 +1,12 @@
+@import "compass";
+// @import "compass/reset";
+@import "compass/css3";
+@import "compass/css3/border-radius";
+@import "compass/css3/opacity";
+@import "compass/utilities";
+//note that compass is a sass extension.
+//install using "gem install compass"
+//use by runninng "compass watch" from the static folder
+
+@import "constants";
+@import "main";
