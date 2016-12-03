@@ -8,8 +8,8 @@ on conditional frequency distributions of n-grams found in the text, with
 '''
 
 from __future__ import unicode_literals
-import nltk, random, bisect, time
-from collections import defaultdict, Counter
+import random, bisect
+from collections import Counter
 
 CLAUSE_TERMINALS = ['.', '!', '?', '\n\n', u'\U0000FFFF']
 CLAUSE_STARTS = ['The']

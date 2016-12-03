@@ -3,21 +3,24 @@
 {{block head}}
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
-    var posts_url = "{{=URL('api', 'get_posts', user_signature=True)}}";
-    var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
+    var gen_img_url = "{{=URL('static', 'images', 'gen')}}";
+    var posts_url = "{{=URL('api', 'get_posts')}}";
+    var add_post_url = "{{=URL('api', 'add_post')}}";
     var edit_post_url = "{{=URL('api', 'edit_post', user_signature=True)}}";
     var del_post_url = "{{=URL('api', 'del_post', user_signature=True)}}";
-    var generate_text_url = "{{=URL('api', 'generate_text', user_signature=True)}}";
+    var generate_post_url = "{{=URL('api', 'generate_post')}}";
 </script>
 {{end}}
 
 
 <div class="main_content">
     <div id="vue-div" class="display:none">
-        <a class="SHITPOSTBUTTON" v-on:click="generate_text();">Generate Shitpost</a>
+        <a class="SHITPOSTBUTTON" v-on:click="generate_post();">Generate Shitpost</a>
         <div class="posts">
             <div v-for="post, index in posts" class="post-content" :key="post.id">
-                <p class="post-contents">${post.text_post}</p>
+                <p class="post-contents">${post.text_post}
+                    <img v-bind:src="gen_img_url + post.image" width="100%" class="post_image">
+                </p>
 
                 <p class="info-line">
                     ${post.created_on}

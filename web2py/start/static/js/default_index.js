@@ -119,9 +119,9 @@ var app = function() {
         }
     };
 
-    self.generate_text = function () {
+    self.generate_post = function () {
         // The submit button to add a post has been added.
-        $.get(generate_text_url,
+        $.get(generate_post_url,
             function (data) {
                 self.vue.posts.unshift(data.post);
             });
@@ -132,8 +132,8 @@ var app = function() {
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
-            is_adding_post: false,
             posts: [],
+            is_adding_post: false,
             editing_post: -1,
             logged_in: false,
             has_more: false,
@@ -149,7 +149,7 @@ var app = function() {
             edit_post: self.edit_post,
             delete_post: self.delete_post,
             infini_scroll: self.infini_scroll,
-            generate_text: self.generate_text
+            generate_post: self.generate_post
         }
 
     });

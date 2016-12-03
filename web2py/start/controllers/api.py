@@ -1,8 +1,8 @@
+from __future__ import unicode_literals
 import json
 import os
-
-from applications.start.modules.generator import sentGenerator
-
+from generator import sentGenerator
+from image_generator import image_generator
 
 def generate_text():
     """
@@ -11,10 +11,27 @@ def generate_text():
     file_path = os.path.join(request.folder, 'static', 'json', 'post_compilation.json')
     with open(file_path) as post_comp:
         ngrams = json.load(post_comp)
-    generated = (sentGenerator(ngrams))().encode('utf-8')
+        gen = sentGenerator(ngrams)
+        return gen().encode('utf-8')
 
+
+def generate_image():
+    """
+    Generates original image
+    """
+    bkgd_path = os.path.join(request.folder, 'static', 'images', 'src', 'bkgd')
+    back_overlay_path = os.path.join(request.folder, 'static', 'images', 'src', 'back overlays')
+    overlay_path = os.path.join(request.folder, 'static', 'images', 'src')
+    vector_path = os.path.join(request.folder, 'static', 'images', 'src', 'vectors')
+    dest_path = os.path.join(request.folder, 'static', 'images', 'gen')
+    gen = image_generator(bkgd_path, back_overlay_path, overlay_path, vector_path, dest_path)
+    return gen()
+
+
+def generate_post():
     p_id = db.shitpost.insert(
-        text_post=generated
+        text_post = generate_text(),
+        image = generate_image()
     )
     p = db.shitpost(p_id)
     return response.json(dict(post=p))
@@ -32,6 +49,7 @@ def get_posts():
     has_more = False
     rows = db().select(db.shitpost.ALL, orderby=~db.shitpost.created_on, limitby=(start_idx, end_idx + 1))
     for i, r in enumerate(rows):
+        r.image_url = URL('download', r.image)
         if i < end_idx - start_idx:
             posts.append(r)
         else:
