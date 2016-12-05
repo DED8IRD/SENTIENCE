@@ -208,7 +208,7 @@ function formatTimeStamp(post) {
     post.date_tooltip = readable;
 
     var now = new Date();
-    var timeDiff = [1000, 60, 60, 24, 2];
+    var timeDiff = [1000, 60, 60, 24];
     var times = [now-timestamp];
     for (var i = 0; i < timeDiff.length; ++i) {
         times[i+1] = times[i] / timeDiff[i];
@@ -216,11 +216,15 @@ function formatTimeStamp(post) {
     for (var i = 1; i < times.length; ++i) {
         times[i] = Math.floor(times[i]);
     }
-    var timeStrings = [times[0] + " ms ago", times[1] + " seconds ago", times[2] + " minutes ago", times[3] + " hours ago", "Yesterday at " + time, readable];
-    readable = timeStrings[1];
-    for (var i = 2; i < timeStrings.length; ++i)
-        if (times[i] > 0)
+    var timeStringsSingular = ["1 minute ago", "1 hour ago", "Yesterday at " + time];
+    var timeStrings = [times[2] + " minutes ago", times[3] + " hours ago", readable];
+    readable = times[1] + ((times[1] == 1)? " second ago":" seconds ago");
+    for (var i = 0; i < timeStrings.length; ++i)
+        if (times[i+2] == 1) {
+            readable = timeStringsSingular[i];
+        } else if (times[i+2] > 0) {
             readable = timeStrings[i];
+        }
 
     post.date_readable = readable;
 }
