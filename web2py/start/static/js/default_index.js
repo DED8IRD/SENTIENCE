@@ -140,6 +140,7 @@ var app = function() {
             form_post_content: null,
             form_edit_post_content: null,
             infini_scroll_enabled: false,
+            gen_img_url: null
         },
         methods: {
             get_more: self.get_more,

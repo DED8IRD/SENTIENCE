@@ -30,11 +30,6 @@ body {
   background-attachment: fixed;
 }
 
-#burd {
-  position: fixed;
-  z-index: -100;
-}
-
 .navbar-tab {
   font-size: 20px;
   letter-spacing: 10px;
