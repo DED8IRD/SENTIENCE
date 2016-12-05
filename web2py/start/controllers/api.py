@@ -49,9 +49,10 @@ def get_posts():
     has_more = False
     rows = db().select(db.shitpost.ALL, orderby=~db.shitpost.created_on, limitby=(start_idx, end_idx + 1))
     for i, r in enumerate(rows):
-        r.image_url = URL('download', r.image)
         if i < end_idx - start_idx:
+            print(r)
             posts.append(r)
+            comments = db(db.post_comment.shitpost==r.id).select(db.post_comment.ALL, orderby=~db.post_comment.created_on, limitby=(0,4))
         else:
             has_more = True
     logged_in = auth.user_id is not None
@@ -61,36 +62,44 @@ def get_posts():
         has_more=has_more,
     ))
 
+def view_post():
+    print ('in view_post')
+    post = db.shitpost[request.args(0)] or redirect(URL(r=request, f='index'))
+    comments = db(db.post_comment.shitpost==post.id).select(db.post_comment.ALL)
+    return response.json(dict(
+        post=post,
+        comments=comments
+    ))
 
 # Note that we need the URL to be signed, as this changes the db.
 @auth.requires_signature()
-def add_post():
+def add_comment():
     """Here you get a new post and add it.  Return what you want."""
-    p_id = db.post.insert(
-        post_content=request.vars.post_content
+    c_id =  db.post_comment.insert(
+        comment_content=request.vars.comment_content
     )
-    p = get_post_output(db.post(p_id))
-    return response.json(dict(post=p))
+    c = get_comment_output( db.post_comment(c_id))
+    return response.json(dict(comment=c))
 
 
 @auth.requires_signature()
-def del_post():
-    """Used to delete a post."""
-    post = db.post[request.vars.post_id]
-    if not auth.user or post.user_email != auth.user.email:
+def del_comment():
+    """Used to delete a comment."""
+    comment =  db.post_comment[request.vars.comment_id]
+    if not auth.user or comment.user_email != auth.user.email:
         return "no"
-    db(db.post.id == request.vars.post_id).delete()
+    db( db.post_comment.id == request.vars.comment_id).delete()
     return "ok"
 
 
 @auth.requires_signature()
-def edit_post():
-    """Used to edit a post."""
-    post = db.post[request.vars.post_id]
-    if not auth.user or post.user_email != auth.user.email:
+def edit_comment():
+    """Used to edit a comment."""
+    comment =  db.post_comment[request.vars.comment_id]
+    if not auth.user or comment.user_email != auth.user.email:
         return "no"
-    db(db.post.id == request.vars.post_id).update(post_content = request.vars.post_content)
-    return "{0}{1}".format("Edited On ", post.updated_on)
+    db( db.post_comment.id == request.vars.comment_id).update(post_content = request.vars.comment_content)
+    return "{0}{1}".format("Edited On ", comment.updated_on)
 
 
 # Utility functions
@@ -104,22 +113,24 @@ def get_user_name_from_email(email):
         return ' '.join([u.first_name, u.last_name])
 
 
-def get_post_output(post):
-    id = post.id
-    user_email = post.user_email
-    post_content = post.post_content
+def get_comment_output(comment):
+    id = comment.id
+    shitpost_id = comment.shitpost
+    user_email = comment.user_email
+    comment_content = comment.comment_content
     user_name = get_user_name_from_email(user_email)
-    created_on = post.created_on
-    updated = post.created_on != post.updated_on
-    updated_on = "" if not updated else "{0}{1}".format("Edited On ", post.updated_on)
+    created_on = comment.created_on
+    updated = comment.created_on != comment.updated_on
+    updated_on = "" if not updated else "{0}{1}".format("Edited On ", comment.updated_on)
     is_mine = auth.user and user_email == auth.user.email
     return dict(
                 id=id,
+                shitpost_id=shitpost_id,
                 user_email=user_email,
-                post_content=post_content,
+                comment_content=comment_content,
                 user_name=user_name,
                 created_on=created_on,
                 updated=updated,
                 updated_on=updated_on,
-                is_mine=is_mine,
+                is_mine=is_mine
             )

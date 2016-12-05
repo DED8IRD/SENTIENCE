@@ -8,16 +8,6 @@
 # - download is for downloading files uploaded in the db (does streaming)
 # -------------------------------------------------------------------------
 
-def get_user_name_from_email(email):
-    """Returns a string corresponding to the user first and last names,
-    given the user email."""
-    u = db(db.auth_user.email == email).select().first()
-    if u is None:
-        return 'None'
-    else:
-        return ' '.join([u.first_name, u.last_name])
-
-
 def index():
     """
     This is your main controller.  Here you do almost nothing; you just cause index.html to be served.
@@ -25,10 +15,19 @@ def index():
     return dict()
 
 
-@auth.requires_login()
-def edit():
+
+def post():
     """
-    This is the page to create / edit / delete a post.
+    Serves the individual post view.
+    """
+    post = db.shitpost[request.args(0)] or redirect(URL(r=request, f='index'))
+    comments = db(db.post_comment.shitpost==post.id).select(db.post_comment.ALL)
+    return locals()
+
+
+def contrib():
+    """
+    Contributer page
     """
     return dict()
 

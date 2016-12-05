@@ -1,0 +1,35 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var post_url = "{{=URL('api', 'view_post', args=request.args)}}";
+    var add_comment_url = "{{=URL('api', 'add_comment')}}";
+    var edit_comment_url = "{{=URL('api', 'edit_comment', user_signature=True)}}";
+    var del_comment_url = "{{=URL('api', 'del_comment', user_signature=True)}}";
+</script>
+{{end}}
+
+<div class="main_content">
+    <div id="vue-div" class="display:none">
+        <div class="post-content">
+            ${post.text_post}
+            <img v-bind:src="'{{=URL('static', 'images', 'gen')}}/' + post.image" width="100%" class="post_image">
+            <p v-bind:title="post.date_tooltip" class="info-line">
+                ${post.date_readable}
+            </p>
+
+            <div class="comments">
+                <h1>Comments</h1>
+                <div v-for="comment in comments" class="comment-content" :key="comment.id">
+                    <p class="comment">${comment.comment_content}</p>
+                    <p v-bind:title="comment.date_tooltip" class="'info-line">
+                        ${comment.date_readable}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{=URL('static', 'js/default_post.js')}}"></script>

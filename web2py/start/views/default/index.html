@@ -4,10 +4,10 @@
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
     var posts_url = "{{=URL('api', 'get_posts')}}";
-    var add_post_url = "{{=URL('api', 'add_post')}}";
-    var edit_post_url = "{{=URL('api', 'edit_post', user_signature=True)}}";
-    var del_post_url = "{{=URL('api', 'del_post', user_signature=True)}}";
     var generate_post_url = "{{=URL('api', 'generate_post')}}";
+    var add_comment_url = "{{=URL('api', 'add_comment')}}";
+    var edit_comment_url = "{{=URL('api', 'edit_comment', user_signature=True)}}";
+    var del_comment_url = "{{=URL('api', 'del_comment', user_signature=True)}}";
 </script>
 {{end}}
 
@@ -17,9 +17,9 @@
         <a class="SHITPOSTBUTTON" v-on:click="generate_post();">Generate Shitpost</a>
         <div class="posts">
             <div v-for="post, index in posts" class="post-content" :key="post.id">
-                <p class="post-contents">${post.text_post}
+                <a v-bind:href="'{{=URL('post')}}/' + post.id" class="post-contents">${post.text_post}
                     <img v-bind:src="'{{=URL('static', 'images', 'gen')}}/' + post.image" width="100%" class="post_image">
-                </p>
+                </a>
 
                 <p v-bind:title="post.date_tooltip"class="info-line">
                     ${post.date_readable}

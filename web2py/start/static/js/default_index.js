@@ -26,35 +26,37 @@ var app = function() {
     }
 
     self.get_posts = function () {
-        $.getJSON(get_posts_url(0, INITIAL_POST_COUNT), function (data) {
-            formatTimeStamps(data.posts);
-            self.vue.posts = data.posts;
-            self.vue.has_more = data.has_more;
-            self.vue.logged_in = data.logged_in;
-            self.infini_scroll();
-        })
+        $.getJSON(get_posts_url(0, INITIAL_POST_COUNT),
+            function (data) {
+                formatTimeStamps(data.posts);
+                self.vue.posts = data.posts;
+                self.vue.has_more = data.has_more;
+                self.vue.logged_in = data.logged_in;
+                self.infini_scroll();
+            })
     };
 
     self.get_more = function () {
         var num_posts = self.vue.posts.length;
-        $.getJSON(get_posts_url(num_posts, num_posts + ADDITIONAL_POST_LOAD), function (data) {
-            self.vue.has_more = data.has_more;
-            formatTimeStamps(data.posts);
-            self.extend(self.vue.posts, data.posts);
-            self.vue.infini_scroll_enabled = true;
-        });
+        $.getJSON(get_posts_url(num_posts, num_posts + ADDITIONAL_POST_LOAD),
+            function (data) {
+                self.vue.has_more = data.has_more;
+                formatTimeStamps(data.posts);
+                self.extend(self.vue.posts, data.posts);
+                self.vue.infini_scroll_enabled = true;
+            });
     };
 
-    self.add_post_button = function () {
+    self.add_comment_button = function () {
         // The button to add a post has been pressed.
-        self.vue.is_adding_post = !self.vue.is_adding_post;
+        self.vue.is_adding_comment = !self.vue.is_adding_comment;
     };
 
-    self.add_post = function () {
+    self.add_comment = function () {
         // The submit button to add a post has been added.
-        $.post(add_post_url,
+        $.post(add_comment_url,
             {
-                post_content: self.vue.form_post_content
+                comment_content: self.vue.form_comment_content
             },
             function (data) {
                 $.web2py.enableElement($("#post-button"));
@@ -62,34 +64,34 @@ var app = function() {
             });
     };
 
-    self.edit_post_button = function(post_id, post_content) {
-        self.vue.editing_post = post_id;
-        if (post_content) {
-            self.vue.form_edit_post_content = post_content;
+    self.edit_comment_button = function(comment_id, comment_content) {
+        self.vue.editing_comment = comment_id;
+        if (comment_content) {
+            self.vue.form_edit_comment_content = comment_content;
         }
     }
 
-    self.edit_post = function(post_id, post_index) {
+    self.edit_comment = function(comment_id, comment_index) {
         // The submit button to add a post has been added.
-        $.post(edit_post_url,
+        $.post(edit_comment_url,
             {
-                post_id: post_id,
-                post_content: self.vue.form_edit_post_content,
+                comment_id: comment_id,
+                comment_content: self.vue.form_edit_comment_content,
             },
             function (data) {
                 if (data == "no")
                     return;
-                post = self.vue.posts[post_index]
-                post.post_content = self.vue.form_edit_post_content
-                post.updated_on = data
-                post.updated = true
+                post = self.vue.posts[post_index];
+                post.post_content = self.vue.form_edit_comment_content;
+                post.updated_on = data;
+                post.updated = true;
             });
     }
 
-    self.delete_post = function(post_id) {
-        $.post(del_post_url,
+    self.delete_comment = function(comment_id) {
+        $.post(del_comment_url,
             {
-                post_id: post_id
+                comment_id: comment_id
             },
             function (data) {
                 if (data == "no")
@@ -136,22 +138,21 @@ var app = function() {
         unsafeDelimiters: ['!{', '}'],
         data: {
             posts: [],
-            is_adding_post: false,
-            editing_post: -1,
+            is_adding_comment: false,
+            editing_comment: -1,
             logged_in: false,
             has_more: false,
-            form_post_content: null,
-            form_edit_post_content: null,
-            infini_scroll_enabled: false,
-            gen_img_url: null
+            form_comment_content: null,
+            form_edit_comment_content: null,
+            infini_scroll_enabled: false
         },
         methods: {
             get_more: self.get_more,
-            add_post_button: self.add_post_button,
-            add_post: self.add_post,
-            edit_post_button: self.edit_post_button,
-            edit_post: self.edit_post,
-            delete_post: self.delete_post,
+            add_comment_button: self.add_comment_button,
+            add_comment: self.add_comment,
+            edit_comment_button: self.edit_comment_button,
+            edit_comment: self.edit_comment,
+            delete_comment: self.delete_comment,
             infini_scroll: self.infini_scroll,
             generate_post: self.generate_post
         }
