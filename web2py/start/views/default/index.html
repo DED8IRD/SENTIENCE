@@ -21,8 +21,8 @@
                     <img v-bind:src="'{{=URL('static', 'images', 'gen')}}/' + post.image" width="100%" class="post_image">
                 </p>
 
-                <p class="info-line">
-                    ${post.created_on}
+                <p v-bind:title="post.date_tooltip"class="info-line">
+                    ${post.date_readable}
                 </p>
             </div>
             <p v-if="has_more" class="show_more post-contents"> Loading more content... </p>
