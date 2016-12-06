@@ -24,27 +24,6 @@
 
             <div class="comments">
                 <h1>Comments</h1>
-                <div class="button_bar">
-                    <button v-if="!is_adding_comment" class="btn btn-danger btn-sm" v-on:click="add_comment_button()" v-bind:class="{'disabled': !logged_in}">
-                        Add comment
-                    </button>
-                    <button v-if="is_adding_comment" class="btn btn-warning btn-sm" v-on:click="add_comment_button()">
-                        Cancel
-                    </button>
-                </div>
-
-                <div v-if="is_adding_comment" id="add_new_comment">
-                    <div>
-                        <textarea class="form-control string" id="no_table_content" v-model="form_comment_content" placeholder="Content" type="text" ></textarea>
-                        <span class="help-block"></span>
-                    </div>
-                    <div>
-                        <button class="btn btn-primary btn-sm post-button" v-on:click="add_comment()">
-                            Post
-                        </button>
-                    </div>
-                </div>
-
                 <div class="result_table">
                     <div v-for="comment in comments" class="comment-content" :key="comment.id">
                         <p class="comment">${comment.comment_content}</p>
@@ -60,7 +39,26 @@
                             </span>
                         </p>
                     </div>
+                </div>
 
+                <div v-if="is_adding_comment" id="add_new_comment">
+                    <div>
+                        <textarea class="form-control string" id="no_table_content" v-model="form_comment_content" placeholder="Content" type="text" ></textarea>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="form-group text-right">
+                        <div>
+                            <input class="btn btn-primary" id="post-button" type="submit" value="Post" v-on:click="add_comment()"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="button_bar text-right">
+                    <button v-if="!is_adding_comment" class="btn btn-danger btn-sm add-btn" v-on:click="add_comment_button()" v-bind:class="{'disabled': !logged_in}">
+                        Add comment
+                    </button>
+                    <button v-if="is_adding_comment" class="btn btn-warning btn-sm cancel-btn" v-on:click="add_comment_button()">
+                        Cancel
+                    </button>
                 </div>
             </div>
         </div>
