@@ -91,7 +91,7 @@ def add_comment():
 @auth.requires_signature()
 def del_comment():
     """Used to delete a comment."""
-    comment =  db.post_comment[request.vars.comment_id]
+    comment = db.post_comment[request.vars.comment_id]
     if not auth.user or comment.user_email != auth.user.email:
         return "no"
     db( db.post_comment.id == request.vars.comment_id).delete()
@@ -101,10 +101,10 @@ def del_comment():
 @auth.requires_signature()
 def edit_comment():
     """Used to edit a comment."""
-    comment =  db.post_comment[request.vars.comment_id]
+    comment = db.post_comment[request.vars.comment_id]
     if not auth.user or comment.user_email != auth.user.email:
         return "no"
-    db( db.post_comment.id == request.vars.comment_id).update(post_content = request.vars.comment_content)
+    db( db.post_comment.id == request.vars.comment_id).update(comment_content = request.vars.comment_content)
     return "{0}{1}".format("Edited On ", comment.updated_on)
 
 

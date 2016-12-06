@@ -61,17 +61,17 @@ var app = function() {
         $.post(edit_comment_url,
             {
                 comment_id: comment_id,
-                comment_content: self.vue.form_edit_comment_content,
+                comment_content: self.vue.form_edit_comment_content
             },
             function (data) {
                 if (data == "no")
                     return;
-                comment = self.vue.comment[comment_index],
-                comment.comment_content = self.vue.form_edit_comment_content,
-                comment.updated_on = data,
-                comment.updated = true
+                comment = self.vue.comments[comment_index];
+                comment.comment_content = self.vue.form_edit_comment_content;
+                comment.updated_on = data;
+                comment.updated = true;
             });
-    }
+    };
 
     self.delete_comment = function(comment_id) {
         $.post(del_comment_url,

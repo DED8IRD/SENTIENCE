@@ -25,9 +25,28 @@
             <div class="comments">
                 <h1>Comments</h1>
                 <div class="result_table">
-                    <div v-for="comment in comments" class="comment-content" :key="comment.id">
-                        <p class="comment">${comment.comment_content}</p>
-                        <p class="info-line">${comment.user_name}
+                    <div v-for="comment, index in comments" class="comment-content" :key="comment.id">
+                        <div v-if="editing_comment == comment.id">
+                            <form action="#" v-on:submit.prevent="edit_comment(comment.id, index)" class="form-horizontal" enctype="multipart/form-data" method="post">
+                                <div class="form-group">
+                                    <div>
+                                        <input class="form-control string" v-model="form_edit_comment_content" type="textarea"/>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group text-right">
+                                    <input class="btn btn-primary edit-post-button" type="submit" value="Post" v-on:click="edit_comment_button(-1)"/>
+                                </div>
+                            </form>
+                            <div class="text-right">
+                                <button class="btn btn-warning btn-sm cancel-edit-btn" v-on:click="edit_comment_button(-1)">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                        <p class="comment" v-else>${comment.comment_content}</p>
+                        <p class="info-line">
+                            ${comment.user_name}
                             <span class="comment-date" v-bind:title="comment.date_tooltip">
                                 ${comment.date_readable}
                             </span>
