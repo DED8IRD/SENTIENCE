@@ -15,6 +15,12 @@ def index():
     return dict()
 
 
+def bestof():
+    """
+    Serves the best of view.
+    """
+    return dict()
+
 
 def post():
     """

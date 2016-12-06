@@ -51,7 +51,6 @@ def get_posts():
     rows = db().select(db.shitpost.ALL, orderby=~db.shitpost.created_on, limitby=(start_idx, end_idx + 1))
     for i, r in enumerate(rows):
         if i < end_idx - start_idx:
-            print(r)
             posts.append(r)
             comments = db(db.post_comment.shitpost==r.id).select(db.post_comment.ALL, orderby=~db.post_comment.created_on, limitby=(0,4))
         else:
@@ -62,6 +61,28 @@ def get_posts():
         logged_in=logged_in,
         has_more=has_more
     ))
+
+
+def get_best_posts():
+    start_idx = int(request.vars.start_idx) if request.vars.start_idx is not None else 0
+    end_idx = 25
+    # We just generate a lot of of data.
+    posts = []
+    has_more = False
+    posts = []
+    rows = db().select(db.shitpost.ALL, orderby=~db.shitpost.upvotes, limitby=(start_idx, end_idx))
+    for i, r in enumerate(rows):
+        if i < end_idx - start_idx:
+            posts.append(r)
+        else:
+            has_more = True
+    logged_in = auth.user_id is not None
+    return response.json(dict(
+        posts=posts,
+        logged_in=logged_in,
+        has_more=has_more
+    ))
+
 
 def view_post():
     post = db.shitpost[request.args(0)] or redirect(URL(r=request, f='index'))
@@ -75,6 +96,7 @@ def view_post():
         comments=comments,
         logged_in=logged_in
     ))
+
 
 # Note that we need the URL to be signed, as this changes the db.
 # @auth.requires_signature()
