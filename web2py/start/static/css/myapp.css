@@ -28,6 +28,8 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
+  font-variant-ligatures: no-common-ligatures;
+  -webkit-font-variant-ligatures: no-common-ligatures;
 }
 
 .navbar-tab {
@@ -82,6 +84,7 @@ body {
   -webkit-border-radius: 16px;
   border-radius: 16px;
   width: 40%;
+  max-width: 800px;
   margin: 20px auto;
 }
 
@@ -96,17 +99,45 @@ body {
   letter-spacing: 16px;
   font-size: 24px;
   font-weight: bold;
+  font-kerning: none;
+}
 
+.comment {
+  color: #4afafc;
+  text-shadow: 1px 1px #ff67f2;
+  font-family: "Share Tech Mono", "Courier";
+  letter-spacing: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  font-kerning: none;
+}
+
+.comment-date {
+  margin-left: 16px;
+}
+
+.post_image {
+  width: 100%;
+}
+
+.post-datetime {
+  color: #4afafc;
+  text-shadow: 1px 1px #ff67f2;
+  font-family: "VT323", "Courier";
+  letter-spacing: 6px;
+  font-size: 16px;
+  margin-top: -10px;
+  font-kerning: none;
 }
 
 .info-line {
   color: #4afafc;
   text-shadow: 1px 1px #ff67f2;
   font-family: "VT323", "Courier";
-  letter-spacing: 10px;
-  font-size: 20px;
-  margin-top: -5px;
-  margin-bottom: -10px;
+  letter-spacing: 5px;
+  font-size: 12px;
+  margin-top: -10px;
+  font-kerning: none;
 }
 
 .hidden {

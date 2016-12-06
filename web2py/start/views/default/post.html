@@ -13,11 +13,14 @@
 <div class="main_content">
     <div id="vue-comment-div" class="display:none">
         <div class="post-content">
-            ${post.text_post}
-            <img v-bind:src="'{{=URL('static', 'images', 'gen')}}/' + post.image" width="100%" class="post_image">
-            <p v-bind:title="post.date_tooltip" class="info-line">
-                ${post.date_readable}
-            </p>
+            <div class="post-contents">
+                <p>${post.text_post}</p>
+                <p v-bind:title="post.date_tooltip" class="post-datetime">
+                    ${post.date_readable}
+                </p>
+            </div>
+
+            <img v-bind:src="'{{=URL('static', 'images', 'gen')}}/' + post.image" class="post_image" />
 
             <div class="comments">
                 <h1>Comments</h1>
@@ -45,17 +48,16 @@
                 <div class="result_table">
                     <div v-for="comment in comments" class="comment-content" :key="comment.id">
                         <p class="comment">${comment.comment_content}</p>
-                        <p class="username">${comment.user_name}
-                            &emsp;&emsp;${comment.created_on}
+                        <p class="info-line">${comment.user_name}
+                            <span class="comment-date" v-bind:title="comment.date_tooltip">
+                                ${comment.date_readable}
+                            </span>
                             <span v-if="comment.is_mine" class="shifted">
                                 <i class="fa fa-pencil" v-on:click="edit_comment_button(comment.id, comment.comment_content)"></i>
                             </span>
                             <span v-if="comment.is_mine" class="shifted">
                                 <i class="fa fa-trash-o" v-on:click="delete_comment(comment.id)"></i>
                             </span>
-                        </p>
-                        <p v-bind:title="comment.date_tooltip" class="'info-line">
-                            ${comment.date_readable}
                         </p>
                     </div>
 

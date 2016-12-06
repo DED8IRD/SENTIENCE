@@ -16,18 +16,16 @@ var app = function() {
         }
     };
 
-    self.get_comments = function () {
-
-    }
-
     self.view_post = function () {
         $.getJSON(post_url,
             function (data) {
                 self.vue.post=data.post;
+                formatTimeStamp(data.post);
                 self.vue.comments=data.comments;
+                formatTimeStamps(data.comments);
                 self.vue.logged_in=data.logged_in;
             });
-    }
+    };
 
     self.add_comment_button = function () {
         // The button to add a post has been pressed.
@@ -44,6 +42,7 @@ var app = function() {
             },
             function (data) {
                 $.web2py.enableElement($("#post-button"));
+                formatTimeStamp(data.comment);
                 self.vue.comments.unshift(data.comment);
                 self.vue.is_adding_comment = !self.vue.is_adding_comment;
                 self.vue.form_comment_content = "";
@@ -55,7 +54,7 @@ var app = function() {
         if (comment_content) {
             self.vue.form_edit_comment_content = comment_content;
         }
-    }
+    };
 
     self.edit_comment = function(comment_id, comment_index) {
         // The submit button to add a post has been added.
@@ -67,9 +66,9 @@ var app = function() {
             function (data) {
                 if (data == "no")
                     return;
-                comment = self.vue.comment[comment_index]
-                comment.comment_content = self.vue.form_edit_comment_content
-                comment.updated_on = data
+                comment = self.vue.comment[comment_index],
+                comment.comment_content = self.vue.form_edit_comment_content,
+                comment.updated_on = data,
                 comment.updated = true
             });
     }

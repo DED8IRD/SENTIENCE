@@ -14,13 +14,14 @@
         <a class="SHITPOSTBUTTON" v-on:click="generate_post();">Generate Shitpost</a>
         <div class="posts">
             <div v-for="post, index in posts" class="post-content" :key="post.id">
-                <a v-bind:href="'{{=URL('post')}}/' + post.id" class="post-contents">${post.text_post}
-                    <img v-bind:src="'{{=URL('static', 'images', 'gen')}}/' + post.image" width="100%" class="post_image">
-                </a>
+                <a v-bind:href="'{{=URL('post')}}/' + post.id" class="post-contents">
+                    <p>${post.text_post}</p>
+                    <p v-bind:title="post.date_tooltip" class="post-datetime">
+                        ${post.date_readable}
+                    </p>
 
-                <p v-bind:title="post.date_tooltip"class="info-line">
-                    ${post.date_readable}
-                </p>
+                    <img v-bind:src="'{{=URL('static', 'images', 'gen')}}/' + post.image" class="post_image" />
+                </a>
             </div>
             <p v-if="has_more" class="show_more post-contents"> Loading more content... </p>
         </div>
