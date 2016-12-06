@@ -53,7 +53,7 @@ def get_posts():
         if i < end_idx - start_idx:
             sp = get_post_output(r)
             posts.append(sp)
-            comments = db(db.post_comment.shitpost==r.id).select(db.post_comment.ALL, orderby=~db.post_comment.created_on, limitby=(0,4))
+            #comments = db(db.post_comment.shitpost==r.id).select(db.post_comment.ALL, orderby=~db.post_comment.created_on, limitby=(0,4))
         else:
             has_more = True
     logged_in = auth.user_id is not None
@@ -74,7 +74,8 @@ def get_best_posts():
     rows = db().select(db.shitpost.ALL, orderby=~db.shitpost.upvotes, limitby=(start_idx, end_idx))
     for i, r in enumerate(rows):
         if i < end_idx - start_idx:
-            posts.append(r)
+            sp = get_post_output(r)
+            posts.append(sp)
         else:
             has_more = True
     logged_in = auth.user_id is not None
@@ -87,13 +88,14 @@ def get_best_posts():
 
 def view_post():
     post = db.shitpost[request.args(0)] or redirect(URL(r=request, f='index'))
+    sp = get_post_output(post)
     list = db(db.post_comment.shitpost==post.id).select(db.post_comment.ALL)
     comments = []
     logged_in = auth.user_id is not None
     for comment in list:
         comments.append(get_comment_output(comment))
     return response.json(dict(
-        post=post,
+        post=sp,
         comments=comments,
         logged_in=logged_in
     ))

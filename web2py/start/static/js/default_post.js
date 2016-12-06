@@ -97,6 +97,21 @@ var app = function() {
         )
     };
 
+    self.vote = function(p_id, index, value) {
+        $.post(vote_url,
+        {
+            post_id: p_id,
+            vote_value: parseInt(value, 10)
+        },
+        function (data) {
+            if (data.success == "no")
+                return;
+            post = self.vue.post;
+            post.upvotes = data.count;
+            post.my_vote = (data.success == "vote")? value: 0;
+        });
+    };
+
     self.vue = new Vue({
         el: "#vue-comment-div",
         delimiters: ['${', '}'],
@@ -119,7 +134,8 @@ var app = function() {
             add_comment: self.add_comment,
             edit_comment_button: self.edit_comment_button,
             edit_comment: self.edit_comment,
-            delete_comment: self.delete_comment
+            delete_comment: self.delete_comment,
+            vote: self.vote
         }
 
     });
