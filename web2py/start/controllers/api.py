@@ -64,8 +64,11 @@ def get_posts():
 
 def view_post():
     post = db.shitpost[request.args(0)] or redirect(URL(r=request, f='index'))
-    comments = db(db.post_comment.shitpost==post.id).select(db.post_comment.ALL)
+    list = db(db.post_comment.shitpost==post.id).select(db.post_comment.ALL)
+    comments = []
     logged_in = auth.user_id is not None
+    for comment in list:
+        comments.append(get_comment_output(comment))
     return response.json(dict(
         post=post,
         comments=comments,

@@ -60,6 +60,7 @@ var app = function() {
             },
             function (data) {
                 $.web2py.enableElement($("#post-button"));
+                formatTimeStamp(data.post);
                 self.vue.posts.unshift(data.post);
             });
     };
@@ -69,7 +70,7 @@ var app = function() {
         if (comment_content) {
             self.vue.form_edit_comment_content = comment_content;
         }
-    }
+    };
 
     self.edit_comment = function(comment_id, comment_index) {
         // The submit button to add a post has been added.
@@ -86,7 +87,7 @@ var app = function() {
                 post.updated_on = data;
                 post.updated = true;
             });
-    }
+    };
 
     self.delete_comment = function(comment_id) {
         $.post(del_comment_url,
@@ -128,6 +129,7 @@ var app = function() {
         // The submit button to add a post has been added.
         $.get(generate_post_url,
             function (data) {
+                formatTimeStamp(data.post);
                 self.vue.posts.unshift(data.post);
             });
     };
@@ -216,13 +218,13 @@ function formatTimeStamp(post) {
     for (var i = 0; i < timeDiff.length; ++i) {
         times[i+1] = times[i] / timeDiff[i];
     }
-    for (var i = 1; i < times.length; ++i) {
+    for (i = 1; i < times.length; ++i) {
         times[i] = Math.floor(times[i]);
     }
     var timeStringsSingular = ["1 minute ago", "1 hour ago", "Yesterday at " + time];
     var timeStrings = [times[2] + " minutes ago", times[3] + " hours ago", month + " " + day];
     readable = times[1] + ((times[1] == 1)? " second ago":" seconds ago");
-    for (var i = 0; i < timeStrings.length; ++i) {
+    for (i = 0; i < timeStrings.length; ++i) {
         if (times[i + 2] == 1) {
             readable = timeStringsSingular[i];
         } else if (times[i + 2] > 0) {
