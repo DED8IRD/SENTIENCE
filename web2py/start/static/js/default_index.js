@@ -175,7 +175,7 @@ var app = function() {
 /*
   Utility functions for timestamp formatting
  */
-function readableTime(time) {
+function readableTime(time, seconds) {
     var readable = time.split(":");
     var hour = parseInt(readable[0], 10);
     var min = readable[1];
@@ -183,7 +183,7 @@ function readableTime(time) {
     var period = (hour < 12)? "AM": "PM";
     hour = hour % 12;
     hour = (hour == 0)? 12: hour;
-    return hour+":"+min+":"+sec+" "+period;
+    return (seconds)? hour+":"+min+":"+sec+" "+period: hour+":"+min+period.toLowerCase();
 }
 
 function magicDateFunction(datetime) {
@@ -193,7 +193,7 @@ function magicDateFunction(datetime) {
     var month = parseInt(date[1], 10);
     var day = parseInt(date[2], 10);
 
-    return new Date(month+"/"+day+"/"+year+" "+readableTime(arr[1])+" UTC");
+    return new Date(month+"/"+day+"/"+year+" "+readableTime(arr[1], true)+" UTC");
 }
 
 // [ "Thu", "Dec", "01", "2016", "23:35:11", "GMT-0800", "(Pacific", "Standard", "Time)" ]
@@ -201,10 +201,12 @@ function formatTimeStamp(post) {
     var timestamp = magicDateFunction(post.created_on);
     var datetime = timestamp.toString().split(" ");
 
-    var month = datetime[1];
+    var months = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+    var month = months[timestamp.getMonth()];
     var day = parseInt(datetime[2], 10);
     var year = parseInt(datetime[3], 10);
-    var time = readableTime(datetime[4]);
+    var time = readableTime(datetime[4], false);
     var readable = month+" "+day+", "+year+ " at " + time;
     post.date_tooltip = readable;
 
@@ -218,14 +220,18 @@ function formatTimeStamp(post) {
         times[i] = Math.floor(times[i]);
     }
     var timeStringsSingular = ["1 minute ago", "1 hour ago", "Yesterday at " + time];
-    var timeStrings = [times[2] + " minutes ago", times[3] + " hours ago", readable];
+    var timeStrings = [times[2] + " minutes ago", times[3] + " hours ago", month + " " + day];
     readable = times[1] + ((times[1] == 1)? " second ago":" seconds ago");
-    for (var i = 0; i < timeStrings.length; ++i)
-        if (times[i+2] == 1) {
+    for (var i = 0; i < timeStrings.length; ++i) {
+        if (times[i + 2] == 1) {
             readable = timeStringsSingular[i];
-        } else if (times[i+2] > 0) {
+        } else if (times[i + 2] > 0) {
             readable = timeStrings[i];
         }
+    }
+    if (year != parseInt((now.toString().split(" "))[3], 10)) {
+        readable = month + " " + day + ", " + year
+    }
 
     post.date_readable = readable;
 }

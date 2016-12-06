@@ -16,17 +16,24 @@ var app = function() {
         }
     };
 
+    self.get_comments = function () {
+
+    }
+
     self.view_post = function () {
         $.getJSON(post_url,
             function (data) {
                 self.vue.post=data.post;
                 self.vue.comments=data.comments;
+                self.vue.logged_in=data.logged_in;
             });
     }
 
     self.add_comment_button = function () {
         // The button to add a post has been pressed.
-        self.vue.is_adding_comment = !self.vue.is_adding_comment;
+        if(self.vue.logged_in) {
+            self.vue.is_adding_comment = !self.vue.is_adding_comment;
+        }
     };
 
     self.add_comment = function () {
@@ -37,7 +44,9 @@ var app = function() {
             },
             function (data) {
                 $.web2py.enableElement($("#post-button"));
-                self.vue.posts.unshift(data.post);
+                self.vue.comments.unshift(data.comment);
+                self.vue.is_adding_comment = !self.vue.is_adding_comment;
+                self.vue.form_comment_content = "";
             });
     };
 
@@ -58,10 +67,10 @@ var app = function() {
             function (data) {
                 if (data == "no")
                     return;
-                post = self.vue.posts[post_index]
-                post.post_content = self.vue.form_edit_comment_content
-                post.updated_on = data
-                post.updated = true
+                comment = self.vue.comment[comment_index]
+                comment.comment_content = self.vue.form_edit_comment_content
+                comment.updated_on = data
+                comment.updated = true
             });
     }
 
@@ -74,8 +83,8 @@ var app = function() {
                 if (data == "no")
                     return;
                 var idx = null;
-                for (var i = 0; i < self.vue.posts.length; i++) {
-                    if (self.vue.posts[i].id === post_id) {
+                for (var i = 0; i < self.vue.comments.length; i++) {
+                    if (self.vue.comments[i].id === comment_id) {
                         // If I set this to i, it won't work, as the if below will
                         // return false for items in first position.
                         idx = i + 1;
@@ -83,14 +92,14 @@ var app = function() {
                     }
                 }
                 if (idx) {
-                    self.vue.posts.splice(idx - 1, 1);
+                    self.vue.comments.splice(idx - 1, 1);
                 }
             }
         )
     };
 
     self.vue = new Vue({
-        el: "#vue-div",
+        el: "#vue-comment-div",
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
@@ -115,8 +124,9 @@ var app = function() {
         }
 
     });
+
     self.view_post();
-    $("#vue-div").show();
+    $("#vue-comment-div").show();
     return self;
 };
 
@@ -146,8 +156,8 @@ function magicDateFunction(datetime) {
 }
 
 // [ "Thu", "Dec", "01", "2016", "23:35:11", "GMT-0800", "(Pacific", "Standard", "Time)" ]
-function formatTimeStamp(post) {
-    var timestamp = magicDateFunction(post.created_on);
+function formatTimeStamp(comment) {
+    var timestamp = magicDateFunction(comment.created_on);
     var datetime = timestamp.toString().split(" ");
 
     var month = datetime[1];
@@ -155,7 +165,7 @@ function formatTimeStamp(post) {
     var year = parseInt(datetime[3], 10);
     var time = readableTime(datetime[4]);
     var readable = month+" "+day+", "+year+ " at " + time;
-    post.date_tooltip = readable;
+    comment.date_tooltip = readable;
 
     var now = new Date();
     var timeDiff = [1000, 60, 60, 24];
@@ -176,18 +186,18 @@ function formatTimeStamp(post) {
             readable = timeStrings[i];
         }
 
-    post.date_readable = readable;
+    comment.date_readable = readable;
 }
 
-function formatTimeStamps(posts) {
-    for (var i = 0; i < posts.length; ++i){
-        formatTimeStamp(posts[i]);
+function formatTimeStamps(comments) {
+    for (var i = 0; i < comments.length; ++i){
+        formatTimeStamp(comments[i]);
     }
 }
 
-var APP = null;
+var COMMENTAPP = null;
 
 // This will make everything accessible from the js console;
 // for instance, self.x above would be accessible as APP.x
-jQuery(function(){APP = app();});
+jQuery(function(){COMMENTAPP = app();});
 

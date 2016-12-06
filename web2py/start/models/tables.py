@@ -19,6 +19,7 @@ db.define_table('shitpost',
 db.define_table('post_comment',
                 Field('shitpost', 'reference shitpost', readable=False, writable=False),
                 Field('user_email', default=auth.user.email if auth.user_id else None, readable=False, writable=False),
+                Field('username', requires=IS_NOT_EMPTY()),
                 Field('comment_content', 'text', requires=IS_NOT_EMPTY()),
                 Field('created_on', 'datetime', default=datetime.datetime.utcnow(), readable=False, writable=False),
                 Field('updated_on', 'datetime', update=datetime.datetime.utcnow(), readable=False, writable=False)

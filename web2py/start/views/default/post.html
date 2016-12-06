@@ -4,14 +4,14 @@
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
     var post_url = "{{=URL('api', 'view_post', args=request.args)}}";
-    var add_comment_url = "{{=URL('api', 'add_comment')}}";
+    var add_comment_url = "{{=URL('api', 'add_comment', args=request.args)}}";
     var edit_comment_url = "{{=URL('api', 'edit_comment', user_signature=True)}}";
     var del_comment_url = "{{=URL('api', 'del_comment', user_signature=True)}}";
 </script>
 {{end}}
 
 <div class="main_content">
-    <div id="vue-div" class="display:none">
+    <div id="vue-comment-div" class="display:none">
         <div class="post-content">
             ${post.text_post}
             <img v-bind:src="'{{=URL('static', 'images', 'gen')}}/' + post.image" width="100%" class="post_image">
@@ -21,11 +21,44 @@
 
             <div class="comments">
                 <h1>Comments</h1>
-                <div v-for="comment in comments" class="comment-content" :key="comment.id">
-                    <p class="comment">${comment.comment_content}</p>
-                    <p v-bind:title="comment.date_tooltip" class="'info-line">
-                        ${comment.date_readable}
-                    </p>
+                <div class="button_bar">
+                    <button v-if="!is_adding_comment" class="btn btn-danger btn-sm" v-on:click="add_comment_button()" v-bind:class="{'disabled': !logged_in}">
+                        Add comment
+                    </button>
+                    <button v-if="is_adding_comment" class="btn btn-warning btn-sm" v-on:click="add_comment_button()">
+                        Cancel
+                    </button>
+                </div>
+
+                <div v-if="is_adding_comment" id="add_new_comment">
+                    <div>
+                        <textarea class="form-control string" id="no_table_content" v-model="form_comment_content" placeholder="Content" type="text" ></textarea>
+                        <span class="help-block"></span>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary btn-sm post-button" v-on:click="add_comment()">
+                            Post
+                        </button>
+                    </div>
+                </div>
+
+                <div class="result_table">
+                    <div v-for="comment in comments" class="comment-content" :key="comment.id">
+                        <p class="comment">${comment.comment_content}</p>
+                        <p class="username">${comment.user_name}
+                            &emsp;&emsp;${comment.created_on}
+                            <span v-if="comment.is_mine" class="shifted">
+                                <i class="fa fa-pencil" v-on:click="edit_comment_button(comment.id, comment.comment_content)"></i>
+                            </span>
+                            <span v-if="comment.is_mine" class="shifted">
+                                <i class="fa fa-trash-o" v-on:click="delete_comment(comment.id)"></i>
+                            </span>
+                        </p>
+                        <p v-bind:title="comment.date_tooltip" class="'info-line">
+                            ${comment.date_readable}
+                        </p>
+                    </div>
+
                 </div>
             </div>
         </div>

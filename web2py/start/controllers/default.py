@@ -20,9 +20,7 @@ def post():
     """
     Serves the individual post view.
     """
-    post = db.shitpost[request.args(0)] or redirect(URL(r=request, f='index'))
-    comments = db(db.post_comment.shitpost==post.id).select(db.post_comment.ALL)
-    return locals()
+    return dict()
 
 
 def contrib():

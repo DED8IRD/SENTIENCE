@@ -59,26 +59,29 @@ def get_posts():
     return response.json(dict(
         posts=posts,
         logged_in=logged_in,
-        has_more=has_more,
+        has_more=has_more
     ))
 
 def view_post():
-    print ('in view_post')
     post = db.shitpost[request.args(0)] or redirect(URL(r=request, f='index'))
     comments = db(db.post_comment.shitpost==post.id).select(db.post_comment.ALL)
+    logged_in = auth.user_id is not None
     return response.json(dict(
         post=post,
-        comments=comments
+        comments=comments,
+        logged_in=logged_in
     ))
 
 # Note that we need the URL to be signed, as this changes the db.
-@auth.requires_signature()
+# @auth.requires_signature()
 def add_comment():
     """Here you get a new post and add it.  Return what you want."""
+    post = db.shitpost[request.args(0)] or redirect(URL(r=request, f='index'))
     c_id =  db.post_comment.insert(
+        shitpost=post.id,
         comment_content=request.vars.comment_content
     )
-    c = get_comment_output( db.post_comment(c_id))
+    c = get_comment_output(db.post_comment(c_id))
     return response.json(dict(comment=c))
 
 
@@ -118,14 +121,15 @@ def get_comment_output(comment):
     shitpost_id = comment.shitpost
     user_email = comment.user_email
     comment_content = comment.comment_content
-    user_name = get_user_name_from_email(user_email)
+    user_name = (comment.username if comment.username is not None \
+                 else get_user_name_from_email(user_email))
     created_on = comment.created_on
     updated = comment.created_on != comment.updated_on
     updated_on = "" if not updated else "{0}{1}".format("Edited On ", comment.updated_on)
     is_mine = auth.user and user_email == auth.user.email
     return dict(
                 id=id,
-                shitpost_id=shitpost_id,
+                shitpost=shitpost_id,
                 user_email=user_email,
                 comment_content=comment_content,
                 user_name=user_name,
