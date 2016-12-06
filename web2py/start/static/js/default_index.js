@@ -145,6 +145,7 @@ var app = function() {
                 return;
             post = self.vue.posts[index];
             post.upvotes = data.count;
+            post.my_vote = (data.success == "vote")? value: 0;
         });
     };
 

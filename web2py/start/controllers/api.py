@@ -51,7 +51,8 @@ def get_posts():
     rows = db().select(db.shitpost.ALL, orderby=~db.shitpost.created_on, limitby=(start_idx, end_idx + 1))
     for i, r in enumerate(rows):
         if i < end_idx - start_idx:
-            posts.append(r)
+            sp = get_post_output(r)
+            posts.append(sp)
             comments = db(db.post_comment.shitpost==r.id).select(db.post_comment.ALL, orderby=~db.post_comment.created_on, limitby=(0,4))
         else:
             has_more = True
@@ -144,11 +145,12 @@ def vote():
     for vote in list:
         if vote.user_email == auth.user.email:
             my_vote = vote
+            break
 
     success = False
     new_value = post.upvotes
     vote_value = int(request.vars.vote_value)
-
+    succ = ""
     # Vote
     if my_vote is None:
         v_id = db.votelog.insert(
@@ -159,6 +161,7 @@ def vote():
         db(db.shitpost.id == post.id).update(upvotes = new_value)
         v = db.votelog(v_id)
         success = True
+        succ = "vote"
     else:
         # Delete vote
         if (my_vote.is_upvote and vote_value == 1) or \
@@ -167,10 +170,18 @@ def vote():
             new_value = post.upvotes - vote_value
             db(db.shitpost.id == post.id).update(upvotes=new_value)
             success = True
+            succ = "del"
+        else:
+            db(db.votelog.id == my_vote.id).update(is_upvote = not my_vote.is_upvote)
+            new_value = post.upvotes + vote_value * 2
+            db(db.shitpost.id == post.id).update(upvotes=new_value)
+
+            success = True
+            succ = "vote"
 
     if success:
         return response.json(dict(
-            success="yes",
+            success=succ,
             count = new_value
         ))
     return response.json(dict(
@@ -211,3 +222,30 @@ def get_comment_output(comment):
                 updated_on=updated_on,
                 is_mine=is_mine
             )
+
+def get_post_output(post):
+    id = post.id
+    text_post = post.text_post
+    image = post.image
+    upvotes = post.upvotes
+    created_on = post.created_on
+    my_vote = 0
+    if auth.user:
+        list = db(db.votelog.shitpost == post.id).select(db.votelog.ALL)
+        my_vote = None
+        for vote in list:
+            if vote.user_email == auth.user.email:
+                my_vote = vote
+                break
+        if my_vote is not None:
+            my_vote = 1 if my_vote.is_upvote else -1
+        else:
+            my_vote = 0
+    return dict(
+        id=id,
+        my_vote=my_vote,
+        text_post=text_post,
+        image=image,
+        upvotes=upvotes,
+        created_on=created_on,
+    )
