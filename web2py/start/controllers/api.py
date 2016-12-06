@@ -4,6 +4,7 @@ import os
 from generator import sentGenerator
 from image_generator import image_generator
 
+
 def generate_text():
     """
     nlg text gen
@@ -106,6 +107,53 @@ def edit_comment():
         return "no"
     db( db.post_comment.id == request.vars.comment_id).update(comment_content = request.vars.comment_content)
     return "{0}{1}".format("Edited On ", comment.updated_on)
+
+
+@auth.requires_signature()
+def vote():
+    """Used to vote on a post."""
+    if not auth.user:
+        return response.json(dict(
+            success="no"
+        ))
+    post = db.shitpost[request.vars.post_id]
+    list = db(db.votelog.shitpost == post.id).select(db.votelog.ALL)
+    my_vote = None
+    for vote in list:
+        if vote.user_email == auth.user.email:
+            my_vote = vote
+
+    success = False
+    new_value = post.upvotes
+    vote_value = int(request.vars.vote_value)
+
+    # Vote
+    if my_vote is None:
+        v_id = db.votelog.insert(
+            shitpost = post,
+            is_upvote = True if vote_value == 1 else False
+        )
+        new_value = post.upvotes + vote_value
+        db(db.shitpost.id == post.id).update(upvotes = new_value)
+        v = db.votelog(v_id)
+        success = True
+    else:
+        # Delete vote
+        if (my_vote.is_upvote and vote_value == 1) or \
+           (not my_vote.is_upvote and vote_value == -1):
+            db(db.votelog.id == my_vote.id).delete()
+            new_value = post.upvotes - vote_value
+            db(db.shitpost.id == post.id).update(upvotes=new_value)
+            success = True
+
+    if success:
+        return response.json(dict(
+            success="yes",
+            count = new_value
+        ))
+    return response.json(dict(
+        success="no"
+    ))
 
 
 # Utility functions

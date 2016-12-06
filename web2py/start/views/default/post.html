@@ -7,6 +7,7 @@
     var add_comment_url = "{{=URL('api', 'add_comment', args=request.args)}}";
     var edit_comment_url = "{{=URL('api', 'edit_comment', user_signature=True)}}";
     var del_comment_url = "{{=URL('api', 'del_comment', user_signature=True)}}";
+    var vote_url = "{{=URL('api', 'vote', args=request.args, user_signature=True)}}";
 </script>
 {{end}}
 

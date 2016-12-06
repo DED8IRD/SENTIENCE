@@ -75,18 +75,18 @@ var app = function() {
     self.edit_comment = function(comment_id, comment_index) {
         // The submit button to add a post has been added.
         $.post(edit_comment_url,
-            {
-                comment_id: comment_id,
-                comment_content: self.vue.form_edit_comment_content,
-            },
-            function (data) {
-                if (data == "no")
-                    return;
-                post = self.vue.posts[post_index];
-                post.post_content = self.vue.form_edit_comment_content;
-                post.updated_on = data;
-                post.updated = true;
-            });
+        {
+            comment_id: comment_id,
+            comment_content: self.vue.form_edit_comment_content,
+        },
+        function (data) {
+            if (data == "no")
+                return;
+            post = self.vue.posts[post_index];
+            post.post_content = self.vue.form_edit_comment_content;
+            post.updated_on = data;
+            post.updated = true;
+        });
     };
 
     self.delete_comment = function(comment_id) {
@@ -134,6 +134,20 @@ var app = function() {
             });
     };
 
+    self.vote = function(p_id, index, value) {
+        $.post(vote_url,
+        {
+            post_id: p_id,
+            vote_value: parseInt(value, 10)
+        },
+        function (data) {
+            if (data.success == "no")
+                return;
+            post = self.vue.posts[index];
+            post.upvotes = data.count;
+        });
+    };
+
     self.vue = new Vue({
         el: "#vue-div",
         delimiters: ['${', '}'],
@@ -156,7 +170,8 @@ var app = function() {
             edit_comment: self.edit_comment,
             delete_comment: self.delete_comment,
             infini_scroll: self.infini_scroll,
-            generate_post: self.generate_post
+            generate_post: self.generate_post,
+            vote: self.vote,
         }
 
     });
@@ -172,6 +187,7 @@ var app = function() {
 
     return self;
 };
+
 
 var APP = null;
 

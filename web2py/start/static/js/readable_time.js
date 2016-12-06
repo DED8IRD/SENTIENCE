@@ -23,7 +23,6 @@ function magicDateFunction(datetime) {
     return new Date(month+"/"+day+"/"+year+" "+readableTime(arr[1])+" UTC");
 }
 
-// [ "Thu", "Dec", "01", "2016", "23:35:11", "GMT-0800", "(Pacific", "Standard", "Time)" ]
 function formatTimeStamp(post) {
     var timestamp = magicDateFunction(post.created_on);
     var datetime = timestamp.toString().split(" ");

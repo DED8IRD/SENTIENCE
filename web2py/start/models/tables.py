@@ -25,5 +25,11 @@ db.define_table('post_comment',
                 Field('updated_on', 'datetime', update=datetime.datetime.utcnow(), readable=False, writable=False)
                 )
 
+db.define_table('votelog',
+                Field('user_email', default=auth.user.email if auth.user_id else None, readable=False, writable=False),
+                Field('shitpost', 'reference shitpost', readable=False, writable=False),
+                Field('is_upvote', 'boolean', default=True)
+                )
+
 # after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)

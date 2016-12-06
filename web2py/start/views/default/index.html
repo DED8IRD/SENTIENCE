@@ -5,21 +5,28 @@
 <script>
     var posts_url = "{{=URL('api', 'get_posts')}}";
     var generate_post_url = "{{=URL('api', 'generate_post')}}";
+    var vote_url = "{{=URL('api', 'vote', args=request.args, user_signature=True)}}"
 </script>
 {{end}}
 
 
 <div class="main_content">
     <div id="vue-div" class="display:none">
-        <a class="SHITPOSTBUTTON" v-on:click="generate_post();">Generate Shitpost</a>
+        <a class="SHITPOSTBUTTON" v-on:click="generate_post();">Generate Sentience</a>
         <div class="posts">
             <div v-for="post, index in posts" class="post-content" :key="post.id">
-                <a v-bind:href="'{{=URL('post')}}/' + post.id" class="post-contents">
+                <div class="post-upvote-box">
+                    <p class="vote-arrow no-vote" v-bind:id="'upvote_'+post.id" v-on:click="vote(post.id, index, 1);">▲</p>
+                    <p class="vote-count">${post.upvotes}</p>
+                    <p class="vote-arrow no-vote" v-bind:id="'downvote_'+post.id" v-on:click="vote(post.id, index, -1);">▼</p>
+                </div>
+                <a v-bind:href="'{{=URL('post')}}/' + post.id" class="post-contents post-text-box">
                     <p>${post.text_post}</p>
                     <p v-bind:title="post.date_tooltip" class="post-datetime">
                         ${post.date_readable}
                     </p>
-
+                </a>
+                <a v-bind:href="'{{=URL('post')}}/' + post.id" class="post-contents">
                     <img v-bind:src="'{{=URL('static', 'images', 'gen')}}/' + post.image" class="post_image" />
                 </a>
             </div>
