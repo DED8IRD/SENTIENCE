@@ -13,7 +13,17 @@
     <div id="vue-div" class="display:none">
         <div class="posts">
             <div v-for="post, index in posts" class="post-content" :key="post.id">
-                <div class="post-upvote-box">
+                <div class="post-upvote-box" v-if="post.my_vote==1">
+                    <p class="vote-arrow upvote" v-bind:id="'upvote_'+post.id" v-on:click="vote(post.id, index, 1);">▲</p>
+                    <p class="vote-count">${post.upvotes}</p>
+                    <p class="vote-arrow no-vote" v-bind:id="'downvote_'+post.id" v-on:click="vote(post.id, index, -1);">▼</p>
+                </div>
+                <div class="post-upvote-box" v-if="post.my_vote==-1">
+                    <p class="vote-arrow no-vote" v-bind:id="'upvote_'+post.id" v-on:click="vote(post.id, index, 1);">▲</p>
+                    <p class="vote-count">${post.upvotes}</p>
+                    <p class="vote-arrow downvoted" v-bind:id="'downvote_'+post.id" v-on:click="vote(post.id, index, -1);">▼</p>
+                </div>
+                <div class="post-upvote-box" v-if="post.my_vote==0">
                     <p class="vote-arrow no-vote" v-bind:id="'upvote_'+post.id" v-on:click="vote(post.id, index, 1);">▲</p>
                     <p class="vote-count">${post.upvotes}</p>
                     <p class="vote-arrow no-vote" v-bind:id="'downvote_'+post.id" v-on:click="vote(post.id, index, -1);">▼</p>
