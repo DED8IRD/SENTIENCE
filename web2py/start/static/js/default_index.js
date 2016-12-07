@@ -4,7 +4,7 @@ var app = function() {
     // Constants:
     var INITIAL_POST_COUNT = 0;
     var ADDITIONAL_POST_LOAD = 1;
-    var INFINI_SCROLL_THRESHOLD = 100;
+    var INFINI_SCROLL_THRESHOLD = 500;
 
     var self = {};
 
@@ -186,7 +186,7 @@ var app = function() {
     self.vue.infini_scroll_enabled = true;
 
     self.get_posts();
-    $("#vue-div").show();
+    setTimeout(function(){$('#vue-div').show()}, 100);
 
     return self;
 };

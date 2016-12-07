@@ -141,7 +141,8 @@ var app = function() {
     });
 
     self.view_post();
-    $("#vue-comment-div").show();
+    setTimeout(function(){$('#vue-comment-div').show();}, 100);
+
     return self;
 };
 
