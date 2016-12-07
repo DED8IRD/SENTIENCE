@@ -43,7 +43,7 @@ var app = function() {
             function (data) {
                 $.web2py.enableElement($("#post-button"));
                 formatTimeStamp(data.comment);
-                self.vue.comments.unshift(data.comment);
+                self.vue.comments.push(data.comment);
                 self.vue.is_adding_comment = !self.vue.is_adding_comment;
                 self.vue.form_comment_content = "";
             });
