@@ -130,6 +130,8 @@ var app = function() {
         $.get(generate_post_url,
             function (data) {
                 formatTimeStamp(data.post);
+                data.post.my_vote = 0;
+                data.post.upvotes = 0;
                 self.vue.posts.unshift(data.post);
             });
     };
