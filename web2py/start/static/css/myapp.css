@@ -92,6 +92,12 @@ body {
   margin: 20px auto;
 }
 
+@media(max-width: 600px) {
+  .post-content {
+    width: 100%;
+  }
+}
+
 .post-upvote-box {
   float: left;
   display: inline-block;
