@@ -221,7 +221,7 @@ body {
   font-size: 40px;
 }
 
-.light-box {
+#light-box {
   position: fixed;
   width: 100%;
   height: 100%;

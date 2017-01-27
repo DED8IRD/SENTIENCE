@@ -151,6 +151,14 @@ var app = function() {
         });
     };
 
+    self.open_lightbox = function(p_id) {
+
+    }
+
+    self.close_lightbox = function() {
+        document.getElementById("light-box").className = "hidden";
+    }
+
     self.vue = new Vue({
         el: "#vue-div",
         delimiters: ['${', '}'],
@@ -175,6 +183,8 @@ var app = function() {
             infini_scroll: self.infini_scroll,
             generate_post: self.generate_post,
             vote: self.vote,
+            open_lightbox: self.open_lightbox,
+            close_lightbox: self.close_lightbox,
         }
 
     });

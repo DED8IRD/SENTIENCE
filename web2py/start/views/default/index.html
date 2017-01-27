@@ -11,29 +11,6 @@
 
 
 <div class="main_content">
-    <div id="light-box" class="light-box">
-        <div class="win95-back">
-            <div class="win95-top">
-                <div class="win95-title">
-                    <p><span id="light-box-title">WildDreamyShinji</span> - Sentience</p>
-                </div>
-                <div class="win95-exit">
-                    <p>X</p>
-                </div>
-            </div>
-            <div class="win95-menus">
-                <p><u>F</u>ile</p>
-                <p><u>E</u>dit</p>
-                <p><u>V</u>iew</p>
-                <p><u>H</u>elp</p>
-                <p><u>D</u>ream</p>
-            </div>
-            <div class="win95-content">
-
-            </div>
-        </div>
-    </div>
-
     <div id="vue-div" class="display:none">
         <a class="SHITPOSTBUTTON" v-on:click="generate_post();">Generate Sentience</a>
         <div class="posts">
@@ -54,6 +31,29 @@
                 </a>
             </div>
             <p v-if="has_more" class="show_more post-contents"> Loading more content... </p>
+        </div>
+
+        <div id="light-box" class="hidden">
+            <div class="win95-back">
+                <div class="win95-top">
+                    <div class="win95-title">
+                        <p><span id="light-box-title">WildDreamyShinji</span> - Sentience</p>
+                    </div>
+                    <div class="win95-exit">
+                        <p v-on:click="close_lightbox();">X</p>
+                    </div>
+                </div>
+                <div class="win95-menus">
+                    <p><u>F</u>ile</p>
+                    <p><u>E</u>dit</p>
+                    <p><u>V</u>iew</p>
+                    <p><u>H</u>elp</p>
+                    <p><u>D</u>ream</p>
+                </div>
+                <div class="win95-content">
+
+                </div>
+            </div>
         </div>
     </div>
 </div>
