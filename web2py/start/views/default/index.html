@@ -36,6 +36,8 @@
             <p v-if="has_more" class="show_more post-contents"> Loading more content... </p>
         </div>
 
+        <div id="light-box-overlay" class="hidden" v-on:click="close_lightbox();"></div>
+
         <div id="light-box" class="hidden">
             <div class="win95-back">
                 <div class="win95-top">
