@@ -315,6 +315,7 @@ body {
 
 .win95-exit:hover {
   background-color: #CCCCCC;
+  cursor: pointer;
 }
 
 .win95-exit:active {
@@ -343,6 +344,11 @@ body {
   top: calc(7.5% + 37px);
   left: calc(15% + 14px);
   height: 24px;
+  -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
 }
 
 .win95-menus p {
@@ -351,11 +357,6 @@ body {
   letter-spacing: 1px;
   font-size: 24px;
   display: inline;
-  -moz-user-select: -moz-none;
-   -khtml-user-select: none;
-   -webkit-user-select: none;
-   -ms-user-select: none;
-   user-select: none;
 }
 
 
