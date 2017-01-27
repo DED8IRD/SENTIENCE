@@ -1,0 +1,6 @@
+web2py/start/.idea/*
+web2py/start/*.pyc
+web2py/start/modules/*.pyc
+web2py/start/databases/*
+web2py/start/errors/*
+web2py/start/static/images/gen/*
