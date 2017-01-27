@@ -211,19 +211,30 @@ body {
   margin-right: 30%;
 }
 
+
+/* Light box */
+
+.close-light-box {
+  position: fixed;
+  top: 4px;
+  left: calc(100% - 44px);
+  font-size: 40px;
+}
+
 .light-box-outer {
   position: fixed;
   width: 100%;
   height: 100%;
   left: 0;
   top: 0;
-  background-color: rgba(255, 103, 242, .75);
+  background-color: rgba(122, 51, 114, 0.75);
   z-index: 100000;
 }
 
 .light-box-inner {
   position: fixed;
   background-color: #4afafc;
+  box-shadow: #ff67f2 5px 5px, #4afafc 10px 10px, #ff67f2 15px 15px;
   width: 70%;
   height: 85%;
   left: 15%;
