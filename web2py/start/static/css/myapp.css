@@ -112,6 +112,12 @@ body {
   font-size: 30px;
 }
 
+
+
+.vote-arrow:hover {
+ cursor: pointer;
+}
+
 .no-vote {
   color: darkgray;
 }
@@ -151,8 +157,16 @@ body {
   font-kerning: none;
 }
 
+.post-shitpost:hover {
+  cursor: pointer;
+}
+
 .post_image {
   width: 100%;
+}
+
+.post_image:hover {
+  cursor: pointer;
 }
 
 .post-datetime {
@@ -163,6 +177,25 @@ body {
   font-size: 16px;
   margin-top: -10px;
   font-kerning: none;
+}
+
+.post-datetime:hover {
+ cursor: pointer;
+}
+
+.post-permalink {
+  display: block;
+  color: #4afafc;
+  text-shadow: 1px 1px #ff67f2;
+  font-family: "VT323", "Courier";
+  letter-spacing: 6px;
+  font-size: 12px;
+  margin-top: -4px;
+  font-kerning: none;
+}
+
+.post-permalink:hover {
+ cursor: pointer;
 }
 
 .info-line {

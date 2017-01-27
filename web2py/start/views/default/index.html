@@ -20,13 +20,16 @@
                     <p class="vote-count">${post.upvotes}</p>
                     <p class="vote-arrow" v-bind:class="{'downvoted': post.my_vote==-1, 'no-vote': post.my_vote!=-1}" v-bind:id="'downvote_'+post.id" v-on:click="vote(post.id, index, -1);">▼</p>
                 </div>
-                <a v-bind:href="'{{=URL('post')}}/' + post.id" class="post-contents post-text-box">
-                    <p>${post.text_post}</p>
-                    <p v-bind:title="post.date_tooltip" class="post-datetime">
+                <div class="post-contents post-text-box">
+                    <p v-on:click="open_lightbox(post.id);" class="post-shitpost">${post.text_post}</p>
+                    <p v-on:click="open_lightbox(post.id);" v-bind:title="post.date_tooltip" class="post-datetime">
                         ${post.date_readable}
                     </p>
-                </a>
-                <a v-bind:href="'{{=URL('post')}}/' + post.id" class="post-contents">
+                    <a v-bind:href="'{{=URL('post')}}/' + post.id" class="post-permalink">
+                        (permalink)
+                    </a>
+                </div>
+                <a v-on:click="open_lightbox(post.id);" class="post-contents">
                     <img v-bind:src="'{{=URL('static', 'images', 'gen')}}/' + post.image" class="post_image" />
                 </a>
             </div>

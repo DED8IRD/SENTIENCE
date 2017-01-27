@@ -152,12 +152,12 @@ var app = function() {
     };
 
     self.open_lightbox = function(p_id) {
-
-    }
+        document.getElementById("light-box").className = "";
+    };
 
     self.close_lightbox = function() {
         document.getElementById("light-box").className = "hidden";
-    }
+    };
 
     self.vue = new Vue({
         el: "#vue-div",
