@@ -296,6 +296,7 @@ body {
   text-shadow: none;
   letter-spacing: 1px;
   font-size: 20px;
+  font-weight: bold;
   -moz-user-select: -moz-none;
    -khtml-user-select: none;
    -webkit-user-select: none;
