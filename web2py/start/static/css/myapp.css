@@ -249,12 +249,49 @@ body {
   left: calc(15% + 7px);
   top: calc(7.5% + 7px);
   width: calc(70% - 14px);
+  height: 30px;
+}
+
+.win95-exit {
+  position: fixed;
+  left: calc(85% - 37px);
+  top: calc(7.5% + 10px);
   height: 24px;
+  width: 24px;
+  background-color: #999999;
+  box-shadow: inset 2px 2px rgba(255, 255, 255, .4), inset -2px -2px rgba(0, 0, 0, .4);
+  -moz-box-shadow: inset 2px 2px rgba(255, 255, 255, .4), inset -2px -2px rgba(0, 0, 0, .4);
+  -webkit-box-shadow: inset 2px 2px rgba(255, 255, 255, .4), inset -2px -2px rgba(0, 0, 0, .4);
+  text-align: center;
+}
+
+.win95-exit:hover {
+  background-color: #CCCCCC;
+}
+
+.win95-exit:active {
+  background-color: #666666;
+  box-shadow: inset 2px 2px rgba(0, 0, 0, .4), inset -2px -2px rgba(255, 255, 255, .4);
+  -moz-box-shadow: inset 2px 2px rgba(0, 0, 0, .4), inset -2px -2px rgba(255, 255, 255, .4);
+  -webkit-box-shadow: inset 2px 2px rgba(0, 0, 0, .4), inset -2px -2px rgba(255, 255, 255, .4);
+}
+
+.win95-exit p {
+  margin-top: -3px;
+  color: #000000;
+  text-shadow: none;
+  letter-spacing: 1px;
+  font-size: 20px;
+  -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
 }
 
 .win95-menus {
   position: fixed;
-  top: calc(7.5% + 31px);
+  top: calc(7.5% + 37px);
   left: calc(15% + 14px);
   height: 24px;
 }
@@ -272,9 +309,9 @@ body {
   position: fixed;
   background-color: #ffffff;
   left: calc(15% + 7px);
-  top: calc(7.5% + 65px);
+  top: calc(7.5% + 71px);
   width: calc(70% - 14px);
-  height: calc(85% - 72px);
+  height: calc(85% - 78px);
   box-shadow: inset 2px 2px #555555, inset -2px -2px #dddddd;
   -moz-box-shadow: inset 2px 2px #555555, inset -2px -2px #dddddd;
   -webkit-box-shadow: inset 2px 2px #555555, inset -2px -2px #dddddd;
