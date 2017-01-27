@@ -252,6 +252,22 @@ body {
   height: 24px;
 }
 
+.win95-menus {
+  position: fixed;
+  top: calc(7.5% + 31px);
+  left: calc(15% + 14px);
+  height: 24px;
+}
+
+.win95-menus p {
+  color: #000000;
+  text-shadow: none;
+  letter-spacing: 1px;
+  font-size: 24px;
+  display: inline;
+}
+
+
 .win95-content {
   position: fixed;
   background-color: #ffffff;
