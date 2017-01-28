@@ -14,20 +14,10 @@
 <div class="main_content">
     <div id="vue-comment-div" class="display:none">
         <div class="post-content">
-            <div class="post-upvote-box" v-if="post.my_vote==1">
-                <p class="vote-arrow upvote" v-bind:id="'upvote_'+post.id" v-on:click="vote(post.id, index, 1);">▲</p>
+            <div class="post-upvote-box">
+                <p class="vote-arrow" v-bind:class="{'upvote': post.my_vote==1, 'no-vote': post.my_vote!=1}" v-bind:id="'upvote_'+post.id" v-on:click="vote(post.id, index, 1);">▲</p>
                 <p class="vote-count">${post.upvotes}</p>
-                <p class="vote-arrow no-vote" v-bind:id="'downvote_'+post.id" v-on:click="vote(post.id, index, -1);">▼</p>
-            </div>
-            <div class="post-upvote-box" v-if="post.my_vote==-1">
-                <p class="vote-arrow no-vote" v-bind:id="'upvote_'+post.id" v-on:click="vote(post.id, index, 1);">▲</p>
-                <p class="vote-count">${post.upvotes}</p>
-                <p class="vote-arrow downvoted" v-bind:id="'downvote_'+post.id" v-on:click="vote(post.id, index, -1);">▼</p>
-            </div>
-            <div class="post-upvote-box" v-if="post.my_vote==0">
-                <p class="vote-arrow no-vote" v-bind:id="'upvote_'+post.id" v-on:click="vote(post.id, index, 1);">▲</p>
-                <p class="vote-count">${post.upvotes}</p>
-                <p class="vote-arrow no-vote" v-bind:id="'downvote_'+post.id" v-on:click="vote(post.id, index, -1);">▼</p>
+                <p class="vote-arrow" v-bind:class="{'downvoted': post.my_vote==-1, 'no-vote': post.my_vote!=-1}" v-bind:id="'downvote_'+post.id" v-on:click="vote(post.id, index, -1);">▼</p>
             </div>
             <div class="post-contents post-text-box">
                 <p>${post.text_post}</p>

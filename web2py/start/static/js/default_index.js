@@ -75,18 +75,18 @@ var app = function() {
     self.edit_comment = function(comment_id, comment_index) {
         // The submit button to add a post has been added.
         $.post(edit_comment_url,
-        {
-            comment_id: comment_id,
-            comment_content: self.vue.form_edit_comment_content,
-        },
-        function (data) {
-            if (data == "no")
-                return;
-            post = self.vue.posts[post_index];
-            post.post_content = self.vue.form_edit_comment_content;
-            post.updated_on = data;
-            post.updated = true;
-        });
+            {
+                comment_id: comment_id,
+                comment_content: self.vue.form_edit_comment_content,
+            },
+            function (data) {
+                if (data == "no")
+                    return;
+                post = self.vue.posts[post_index];
+                post.post_content = self.vue.form_edit_comment_content;
+                post.updated_on = data;
+                post.updated = true;
+            });
     };
 
     self.delete_comment = function(comment_id) {
@@ -138,17 +138,39 @@ var app = function() {
 
     self.vote = function(p_id, index, value) {
         $.post(vote_url,
-        {
-            post_id: p_id,
-            vote_value: parseInt(value, 10)
-        },
-        function (data) {
-            if (data.success == "no")
-                return;
-            post = self.vue.posts[index];
-            post.upvotes = data.count;
-            post.my_vote = (data.success == "vote")? value: 0;
-        });
+            {
+                post_id: p_id,
+                vote_value: parseInt(value, 10)
+            },
+            function (data) {
+                if (data.success == "no")
+                    return;
+                post = self.vue.posts[index];
+                post.upvotes = data.count;
+                post.my_vote = (data.success == "vote")? value: 0;
+            });
+    };
+
+    self.open_lightbox = function(p_id) {
+        $.getJSON(post_url,
+            {
+                post_id: p_id,
+            },
+            function (data) {
+                self.vue.lightbox_post=data.post;
+                formatTimeStamp(data.post);
+                self.vue.lightbox_comments=data.comments;
+                formatTimeStamps(data.comments);
+                self.vue.logged_in=data.logged_in;
+
+                document.getElementById("light-box-overlay").className = "fadein";
+                document.getElementById("light-box").className = "";
+            });
+    };
+
+    self.close_lightbox = function() {
+        document.getElementById("light-box-overlay").className = "fadeout";
+        document.getElementById("light-box").className = "hidden";
     };
 
     self.vue = new Vue({
@@ -163,7 +185,9 @@ var app = function() {
             has_more: false,
             form_comment_content: null,
             form_edit_comment_content: null,
-            infini_scroll_enabled: false
+            infini_scroll_enabled: false,
+            lightbox_post: null,
+            lightbox_comments: [],
         },
         methods: {
             get_more: self.get_more,
@@ -175,10 +199,24 @@ var app = function() {
             infini_scroll: self.infini_scroll,
             generate_post: self.generate_post,
             vote: self.vote,
+            open_lightbox: self.open_lightbox,
+            close_lightbox: self.close_lightbox,
         }
 
     });
 
+    document.onkeydown = function(evt) {
+        evt = evt || window.event;
+        var isEscape = false;
+        if ("key" in evt) {
+            isEscape = (evt.key == "Escape" || evt.key == "Esc");
+        } else {
+            isEscape = (evt.keyCode == 27);
+        }
+        if (isEscape) {
+            self.close_lightbox();
+        }
+    };
 
     $(window).scroll(self.infini_scroll);
     $(window).resize(self.infini_scroll);

@@ -101,6 +101,21 @@ def view_post():
     ))
 
 
+def get_post():
+    post = db.shitpost[request.vars.post_id]
+    sp = get_post_output(post)
+    list = db(db.post_comment.shitpost == post.id).select(db.post_comment.ALL)
+    comments = []
+    logged_in = auth.user_id is not None
+    for comment in list:
+        comments.append(get_comment_output(comment))
+    return response.json(dict(
+        post=sp,
+        comments=comments,
+        logged_in=logged_in
+    ))
+
+
 # Note that we need the URL to be signed, as this changes the db.
 # @auth.requires_signature()
 def add_comment():
