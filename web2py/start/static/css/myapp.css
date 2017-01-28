@@ -446,14 +446,10 @@ body {
 
 .win95-image {
   position: fixed;
-  background-color: #ffffff;
   left: calc(15% + 7px);
   top: calc(7.5% + 71px);
   width: calc(70% - 421px);
   height: calc(85% - 78px);
-  box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
-  -moz-box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
-  -webkit-box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
   text-align: center;
 }
 
