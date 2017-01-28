@@ -444,14 +444,47 @@ body {
 }
 
 
-.win95-content {
+.win95-image {
   position: fixed;
   background-color: #ffffff;
   left: calc(15% + 7px);
   top: calc(7.5% + 71px);
-  width: calc(70% - 14px);
+  width: calc(70% - 421px);
   height: calc(85% - 78px);
-  box-shadow: inset 2px 2px #555555, inset -2px -2px #dddddd;
-  -moz-box-shadow: inset 2px 2px #555555, inset -2px -2px #dddddd;
-  -webkit-box-shadow: inset 2px 2px #555555, inset -2px -2px #dddddd;
+  box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
+  -moz-box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
+  -webkit-box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
+  text-align: center;
+}
+
+.win95-image img {
+  position: relative;
+  top: 50%;
+  transform: translate(0, -50%);
+  max-height: calc(100% - 4px);
+  max-width: calc(100% - 4px);
+  margin: auto;
+}
+
+.win95-text {
+  position: fixed;
+  background-color: #ffffff;
+  left: calc(85% - 407px);
+  top: calc(7.5% + 71px);
+  width: 400px;
+  height: calc(85% - 78px);
+  box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
+  -moz-box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
+  -webkit-box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
+  padding: 10px 20px;
+  color: #000000;
+  text-shadow: none;
+  letter-spacing: 1px;
+}
+
+.win95-text h1 {
+  display: inline;
+}
+
+.win95-text p {
 }
