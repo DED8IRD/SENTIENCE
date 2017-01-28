@@ -3,6 +3,7 @@
 {{block head}}
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
+    var post_url = "{{=URL('api', 'get_post', args=request.args)}}";
     var posts_url = "{{=URL('api', 'get_posts')}}";
     var generate_post_url = "{{=URL('api', 'generate_post')}}";
     var vote_url = "{{=URL('api', 'vote', args=request.args, user_signature=True)}}"
@@ -38,7 +39,7 @@
 
         <div id="light-box-overlay" class="hidden" v-on:click="close_lightbox();"></div>
 
-        <div id="light-box" class="hidden">
+        <div v-if="lightbox_post != null" id="light-box">
             <div class="win95-back">
                 <div class="win95-top">
                     <div class="win95-title">
@@ -56,33 +57,19 @@
                     <p><u>D</u>ream</p>
                 </div>
                 <div class="win95-image">
-                    <img src="http://i3.kym-cdn.com/photos/images/facebook/000/916/071/aa6.jpg" />
+                    <img v-bind:src="'{{=URL('static', 'images', 'gen')}}/' + lightbox_post.image" class="post_image" />
                 </div>
                 <div class="win95-text">
-                    <h1>Anime was a mistake. fuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckufck rofl</h1>
+                    <div class="post-contents post-text-box">
+                    </div>
+
+
+                    <h1>${lightbox_post.text_post}</h1>
+                        <p v-bind:title="lightbox_post.date_tooltip">
+                            ${lightbox_post.date_readable}
+                        </p>
                     <hr />
                     <h3>Comments: </h3>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
-                    <p>Fuck yah.</p>
                 </div>
             </div>
         </div>
