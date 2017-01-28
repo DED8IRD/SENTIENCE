@@ -462,12 +462,13 @@ body {
   margin: auto;
 }
 
-.win95-text {
+.win95-text-div {
   position: fixed;
   background-color: #ffffff;
   left: calc(85% - 407px);
   top: calc(7.5% + 71px);
   width: 400px;
+  max-width: 400px;
   height: calc(85% - 78px);
   box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
   -moz-box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
@@ -476,11 +477,19 @@ body {
   color: #000000;
   text-shadow: none;
   letter-spacing: 1px;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 .win95-text h1 {
-  display: inline;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.win95-text hr {
+    border-top: 2px dashed #000000;
 }
 
 .win95-text p {
+
 }
