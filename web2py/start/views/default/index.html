@@ -70,6 +70,63 @@
                         </p>
                     <hr />
                     <h3>Comments: </h3>
+                     <div class="comments">
+                        <div class="result_table">
+                            <div v-for="comment, index in lightbox_comments" class="comment-content" :key="comment.id">
+                                <div v-if="editing_comment == comment.id">
+                                    <form action="#" v-on:submit.prevent="edit_comment(comment.id, index)" class="form-horizontal" enctype="multipart/form-data" method="post">
+                                        <div class="form-group">
+                                            <div>
+                                                <input class="form-control string" v-model="form_edit_comment_content" type="textarea"/>
+                                                <span class="help-block"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group text-right">
+                                            <input class="btn btn-primary edit-post-button" type="submit" value="Post" v-on:click="edit_comment_button(-1)"/>
+                                        </div>
+                                    </form>
+                                    <div class="text-right">
+                                        <button class="btn btn-warning btn-sm cancel-edit-btn" v-on:click="edit_comment_button(-1)">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                                <p v-else>${comment.comment_content}</p>
+                                <p>
+                                    ${comment.user_name}
+                                    <span class="comment-date" v-bind:title="comment.date_tooltip">
+                                        ${comment.date_readable}
+                                    </span>
+                                    <span v-if="comment.is_mine" class="shifted">
+                                        <i class="fa fa-pencil" v-on:click="edit_comment_button(comment.id, comment.comment_content)"></i>
+                                    </span>
+                                    <span v-if="comment.is_mine" class="shifted">
+                                        <i class="fa fa-trash-o" v-on:click="delete_comment(comment.id)"></i>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div v-if="is_adding_comment" id="add_new_comment">
+                            <div>
+                                <textarea class="form-control string" id="no_table_content" v-model="form_comment_content" placeholder="Content" type="text" ></textarea>
+                                <span class="help-block"></span>
+                            </div>
+                            <div class="form-group text-right">
+                                <div>
+                                    <input class="btn btn-primary" id="post-button" type="submit" value="Post" v-on:click="add_comment()"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="button_bar text-right">
+                            <button v-if="!is_adding_comment" class="btn btn-danger btn-sm add-btn" v-on:click="add_comment_button()" v-bind:class="{'disabled': !logged_in}">
+                                Add comment
+                            </button>
+                            <button v-if="is_adding_comment" class="btn btn-warning btn-sm cancel-btn" v-on:click="add_comment_button()">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
