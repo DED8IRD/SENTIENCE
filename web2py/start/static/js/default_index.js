@@ -169,14 +169,16 @@ var app = function() {
                 self.vue.logged_in=data.logged_in;
 
                 document.getElementById("light-box-overlay").className = "fadein";
-                document.getElementById("light-box").className = "";
+                if (document.getElementById("light-box") != null)
+                    document.getElementById("light-box").className = "";
                 document.getElementById("lightbox").className = "";
             });
     };
 
     self.close_lightbox = function() {
         document.getElementById("light-box-overlay").className = "fadeout";
-        document.getElementById("light-box").className = "hidden";
+        if (document.getElementById("light-box") != null)
+            document.getElementById("light-box").className = "hidden";
         document.getElementById("lightbox").className = "hidden";
     };
 
