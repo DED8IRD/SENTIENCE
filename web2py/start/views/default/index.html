@@ -6,6 +6,9 @@
     var post_url = "{{=URL('api', 'get_post', args=request.args)}}";
     var posts_url = "{{=URL('api', 'get_posts')}}";
     var generate_post_url = "{{=URL('api', 'generate_post')}}";
+    var add_comment_url = "{{=URL('api', 'add_comment_lb', args=request.args)}}";
+    var edit_comment_url = "{{=URL('api', 'edit_comment', user_signature=True)}}";
+    var del_comment_url = "{{=URL('api', 'del_comment', user_signature=True)}}";
     var vote_url = "{{=URL('api', 'vote', args=request.args, user_signature=True)}}"
 </script>
 {{end}}
@@ -115,7 +118,7 @@
                                 </div>
                                 <div class="form-group text-right">
                                     <div>
-                                        <input class="btn btn-primary" id="post-button" type="submit" value="Post" v-on:click="add_comment()"/>
+                                        <input class="btn btn-primary" id="post-button" type="submit" value="Post" v-on:click="add_comment(lightbox_post.id)"/>
                                     </div>
                                 </div>
                             </div>

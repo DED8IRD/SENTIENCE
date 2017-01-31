@@ -115,6 +115,15 @@ def get_post():
         logged_in=logged_in
     ))
 
+def add_comment_lb():
+    """Here you get a new post and add it.  Return what you want."""
+    post = db.shitpost[request.vars.post_id]
+    c_id =  db.post_comment.insert(
+        shitpost=post.id,
+        comment_content=request.vars.comment_content
+    )
+    c = get_comment_output(db.post_comment(c_id))
+    return response.json(dict(comment=c))
 
 # Note that we need the URL to be signed, as this changes the db.
 # @auth.requires_signature()

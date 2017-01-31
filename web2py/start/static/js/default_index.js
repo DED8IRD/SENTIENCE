@@ -49,19 +49,24 @@ var app = function() {
 
     self.add_comment_button = function () {
         // The button to add a post has been pressed.
-        self.vue.is_adding_comment = !self.vue.is_adding_comment;
+        if(self.vue.logged_in) {
+            self.vue.is_adding_comment = !self.vue.is_adding_comment;
+        }
     };
 
-    self.add_comment = function () {
+    self.add_comment = function (p_id) {
         // The submit button to add a post has been added.
         $.post(add_comment_url,
             {
+                post_id: p_id,
                 comment_content: self.vue.form_comment_content
             },
             function (data) {
                 $.web2py.enableElement($("#post-button"));
-                formatTimeStamp(data.post);
-                self.vue.posts.unshift(data.post);
+                formatTimeStamp(data.comment);
+                self.vue.lightbox_comments.push(data.comment);
+                self.vue.is_adding_comment = !self.vue.is_adding_comment;
+                self.vue.form_comment_content = "";
             });
     };
 
@@ -77,15 +82,15 @@ var app = function() {
         $.post(edit_comment_url,
             {
                 comment_id: comment_id,
-                comment_content: self.vue.form_edit_comment_content,
+                comment_content: self.vue.form_edit_comment_content
             },
             function (data) {
                 if (data == "no")
                     return;
-                post = self.vue.posts[post_index];
-                post.post_content = self.vue.form_edit_comment_content;
-                post.updated_on = data;
-                post.updated = true;
+                comment = self.vue.lightbox_comments[comment_index];
+                comment.comment_content = self.vue.form_edit_comment_content;
+                comment.updated_on = data;
+                comment.updated = true;
             });
     };
 
@@ -98,8 +103,8 @@ var app = function() {
                 if (data == "no")
                     return;
                 var idx = null;
-                for (var i = 0; i < self.vue.posts.length; i++) {
-                    if (self.vue.posts[i].id === post_id) {
+                for (var i = 0; i < self.vue.lightbox_comments.length; i++) {
+                    if (self.vue.lightbox_comments[i].id === comment_id) {
                         // If I set this to i, it won't work, as the if below will
                         // return false for items in first position.
                         idx = i + 1;
@@ -107,7 +112,7 @@ var app = function() {
                     }
                 }
                 if (idx) {
-                    self.vue.posts.splice(idx - 1, 1);
+                    self.vue.lightbox_comments.splice(idx - 1, 1);
                 }
             }
         )
@@ -154,7 +159,7 @@ var app = function() {
     self.open_lightbox = function(p_id) {
         $.getJSON(post_url,
             {
-                post_id: p_id,
+                post_id: p_id
             },
             function (data) {
                 self.vue.lightbox_post=data.post;
