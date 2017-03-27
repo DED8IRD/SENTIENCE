@@ -112,18 +112,15 @@
 
 
 .win95-image {
-  position: fixed;
-  left: calc(15% + 7px);
-  top: calc(7.5% + 71px);
-  width: calc(70% - 421px);
-  height: calc(85% - 78px);
-  text-align: center;
+    margin: 73px 5px;
+	margin-bottom: 5px;
+    width: calc(100% - 10px);
+    margin-left: 7px;
+    text-align: center;
 }
 
 .win95-image img {
   position: relative;
-  top: 50%;
-  transform: translate(0, -50%);
   max-height: calc(100% - 4px);
   max-width: calc(100% - 4px);
   width: auto;
@@ -132,22 +129,19 @@
 }
 
 .win95-text {
-  position: fixed;
-  background-color: #ffffff;
-  left: calc(85% - 407px);
-  top: calc(7.5% + 71px);
-  width: 400px;
-  max-width: 400px;
-  height: calc(85% - 78px);
-  box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
-  -moz-box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
-  -webkit-box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
-  padding: 10px 20px;
-  color: #000000;
-  text-shadow: none;
-  letter-spacing: 1px;
-  overflow-x: hidden;
-  overflow-y: scroll;
+    background-color: #ffffff;
+    position: relative;
+    margin-left: 7px;
+    width: calc(100% - 14px);
+    box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
+    -moz-box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
+    -webkit-box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
+    padding: 10px 20px;
+    color: #000000;
+    text-shadow: none;
+    letter-spacing: 1px;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 .win95-text h1 {
@@ -281,4 +275,35 @@
     0%   { opacity: 1; }
     99%  { opacity: 0; }
     100% { display: none; visibility: collapse; }
+}
+
+@media only screen and (min-width: 1001px) {
+    .win95-image {
+        position: absolute;
+        left: calc(15% + 7px);
+        top: calc(7.5% + 71px);
+        width: calc(70% - 421px);
+    }
+
+    .win95-image img {
+        top: 50%;
+        transform: translate(0, -50%);
+    }
+
+    .win95-text {
+        position: absolute;
+        left: calc(85% - 407px);
+        top: calc(7.5% + 71px);
+        width: 400px;
+        max-width: 400px;
+        height: calc(85% - 78px);
+    }
+}
+
+@media only screen and (min-width: 1001px) and (max-width: 1320px) {
+
+}
+
+@media only screen and (max-width: 1320px) {
+
 }
