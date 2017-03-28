@@ -280,23 +280,26 @@
 @media only screen and (min-width: 1001px) {
     .win95-image {
         position: absolute;
-        left: calc(15% + 7px);
-        top: calc(7.5% + 71px);
-        width: calc(70% - 421px);
+		margin: 0;
+        left: 7px;
+        top: 71px;
+        width: calc(100% - 428px);
+		height: calc(100% - 78px);
     }
 
     .win95-image img {
         top: 50%;
-        transform: translate(0, -50%);
+		transform: translateY(-50%);
+		width: 100%;
     }
 
     .win95-text {
         position: absolute;
-        left: calc(85% - 407px);
-        top: calc(7.5% + 71px);
+        right: 7px;
+        top: 71px;
         width: 400px;
         max-width: 400px;
-        height: calc(85% - 78px);
+        height: calc(100% - 78px);
     }
 }
 
