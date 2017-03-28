@@ -114,9 +114,10 @@
 .win95-image {
     margin: 73px 5px;
 	margin-bottom: 5px;
-    width: calc(100% - 10px);
+    width: calc(100% - 12px);
     margin-left: 7px;
     text-align: center;
+	height: 30%;
 }
 
 .win95-image img {
@@ -126,11 +127,13 @@
   width: auto;
   height: auto;
   margin: auto;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .win95-text {
     background-color: #ffffff;
-    position: relative;
+    position: absolute;
     margin-left: 7px;
     width: calc(100% - 14px);
     box-shadow: inset 2px 2px #555555, inset -2px -2px #aaaaaa;
@@ -142,6 +145,7 @@
     letter-spacing: 1px;
     overflow-x: hidden;
     overflow-y: scroll;
+	height: calc(60% - 2px);
 }
 
 .win95-text h1 {
@@ -288,8 +292,6 @@
     }
 
     .win95-image img {
-        top: 50%;
-		transform: translateY(-50%);
 		width: 100%;
     }
 
