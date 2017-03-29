@@ -282,6 +282,13 @@
 }
 
 @media only screen and (min-width: 1001px) {
+	.win95-back {
+		width: 70%;
+		height: 85%;
+		left: 15%;
+		top: 7.5%;
+	}
+	
     .win95-image {
         position: absolute;
 		margin: 0;
