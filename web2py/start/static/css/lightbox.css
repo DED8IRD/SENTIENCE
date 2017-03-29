@@ -35,6 +35,8 @@
   top: 7px;
   width: calc(100% - 14px);
   height: 30px;
+  overflow: hidden;
+  padding-right: 38px;
 }
 
 .win95-title p {
@@ -94,12 +96,13 @@
   position: absolute;
   top: 37px;
   left: 14px;
-  height: 24px;
+  height: 28px;
   -moz-user-select: -moz-none;
    -khtml-user-select: none;
    -webkit-user-select: none;
    -ms-user-select: none;
    user-select: none;
+  overflow: hidden;
 }
 
 .win95-menus p {
