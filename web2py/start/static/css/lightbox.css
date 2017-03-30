@@ -18,10 +18,10 @@
 .win95-back {
   position: fixed;
   background-color: #999999;
-  width: 70%;
-  height: 85%;
-  left: 15%;
-  top: 7.5%;
+  width: 95%;
+  height: 95%;
+  left: 2.5%;
+  top: 2.5%;
   box-shadow: inset 2px 2px rgba(255, 255, 255, .4), inset -2px -2px rgba(0, 0, 0, .4);
   -moz-box-shadow: inset 2px 2px rgba(255, 255, 255, .4), inset -2px -2px rgba(0, 0, 0, .4);
   -webkit-box-shadow: inset 2px 2px rgba(255, 255, 255, .4), inset -2px -2px rgba(0, 0, 0, .4);
@@ -29,12 +29,14 @@
 }
 
 .win95-top {
-  position: fixed;
+  position: absolute;
   background-color: #000077;
-  left: calc(15% + 7px);
-  top: calc(7.5% + 7px);
-  width: calc(70% - 14px);
+  left: 7px;
+  top: 7px;
+  width: calc(100% - 14px);
   height: 30px;
+  overflow: hidden;
+  padding-right: 38px;
 }
 
 .win95-title p {
@@ -52,9 +54,9 @@
 }
 
 .win95-exit {
-  position: fixed;
-  left: calc(85% - 37px);
-  top: calc(7.5% + 10px);
+  position: absolute;
+  right: 7px;
+  top: 3px;
   height: 24px;
   width: 24px;
   background-color: #999999;
@@ -91,15 +93,16 @@
 }
 
 .win95-menus {
-  position: fixed;
-  top: calc(7.5% + 37px);
-  left: calc(15% + 14px);
-  height: 24px;
+  position: absolute;
+  top: 37px;
+  left: 14px;
+  height: 28px;
   -moz-user-select: -moz-none;
    -khtml-user-select: none;
    -webkit-user-select: none;
    -ms-user-select: none;
    user-select: none;
+  overflow: hidden;
 }
 
 .win95-menus p {
@@ -145,7 +148,7 @@
     letter-spacing: 1px;
     overflow-x: hidden;
     overflow-y: scroll;
-	height: calc(60% - 2px);
+	height: calc(70% - 84px);
 }
 
 .win95-text h1 {
@@ -282,6 +285,13 @@
 }
 
 @media only screen and (min-width: 1001px) {
+	.win95-back {
+		width: 70%;
+		height: 85%;
+		left: 15%;
+		top: 7.5%;
+	}
+	
     .win95-image {
         position: absolute;
 		margin: 0;
