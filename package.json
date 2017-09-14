@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run buildSass && webpack",
-    "buildDev": "npm run buildSass && webpack --config dev.config.js",
+    "buildDev": "npm run buildSass && webpack --config webpack.config.dev.js",
 	"buildSass": "node-sass --include-path scss ./src/index.scss ./build/index.css --output-style compressed && npm run copyImgs",
 	"copyImgs": "cp -a ./src/img/. ./build/img/"
   },
