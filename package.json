@@ -4,8 +4,9 @@
   "description": "S E N T I E N C E",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
-	"buildDev": "webpack --config dev.config.js"
+    "build": "npm run buildSass && webpack",
+    "buildDev": "npm run buildSass && webpack --config dev.config.js",
+	"buildSass": "node-sass --include-path scss ./src/index.scss ./build/index.css --output-style compressed"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,8 @@
     "html-minifier": "^3.5.5",
     "html-minifier-loader": "^1.4.0",
     "html-webpack-plugin": "^2.30.1",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
     "script-loader": "^0.7.1",
     "webpack": "^3.5.6"
   }
