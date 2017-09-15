@@ -2,7 +2,7 @@ import Inferno from 'inferno';
 import Component from 'inferno-component';
 import Shitpost from './Shitpost';
 
-export default class Post extends Component {
+export default class ShitpostFeed extends Component {
 	constructor(props) {
 		super(props);
 	}

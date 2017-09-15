@@ -1,7 +1,12 @@
+$sentient_cyan: #4AFAFC;
+$sentient_pink: #FF67F2;
+
+@import "navbar";
 @import "shitpost";
 
 .shitpost-feed {
 	position: absolute;
+	top: 70px;
 	left: 25%;
 	width: 50%;
 }

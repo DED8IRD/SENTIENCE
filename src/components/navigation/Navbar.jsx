@@ -1,15 +1,15 @@
 import Inferno from 'inferno';
 import Component from 'inferno-component';
 
-export default class Shitpost extends Component {
+export default class Navbar extends Component {
 	constructor(props) {
 		super(props);
 	}
 	
 	render() {
 		return (
-			<div className="shitpost">
-				<h3>{this.props.shitpost}</h3>
+			<div className="navbar">
+				<h1 className="nav-title"> SENTIENCE </h1>
 			</div>
 		);
 	}
