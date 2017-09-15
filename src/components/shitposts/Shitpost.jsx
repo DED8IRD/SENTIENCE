@@ -8,7 +8,7 @@ export default class Post extends Component {
 	
 	render() {
 		return (
-			<div>
+			<div className="shitpost">
 				<h3>{this.props.shitpost}</h3>
 			</div>
 		);
