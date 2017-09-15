@@ -1,7 +1,7 @@
 import Inferno from 'inferno';
-import App from './components/App';
+import MainView from './components/MainView';
 
 Inferno.render(
-	<App />,
+	<MainView />,
 	document.getElementById('root')
 );
