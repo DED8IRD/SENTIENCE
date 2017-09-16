@@ -10,6 +10,7 @@ export default class Shitpost extends Component {
 		return (
 			<div className="shitpost">
 				<h3>{this.props.shitpost}</h3>
+				<img src={this.props.shitimg} />
 			</div>
 		);
 	}
