@@ -14,8 +14,9 @@ export default class ShitpostFeed extends Component {
 			var shit = this.props.shitposts[i];
 			var shitpost = (
 				<Shitpost key={i}
-					spID={shit.id}
+					id={shit.id}
 					votes={shit.votes}
+					time={shit.time}
 					shitpost={shit.post}
 					shitimg={shit.img} />
 			);
