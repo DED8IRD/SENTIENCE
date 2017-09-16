@@ -2,3 +2,8 @@
 	-webkit-clip-path: $clip;
 	clip-path: $clip;
 }
+
+@mixin display-inline-block() {
+	display: -moz-inline-stack;
+	display: inline-block;
+}

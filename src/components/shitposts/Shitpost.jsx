@@ -9,8 +9,15 @@ export default class Shitpost extends Component {
 	render() {
 		return (
 			<div className="shitpost">
-				<h3>{this.props.shitpost}</h3>
-				<img src={this.props.shitimg} />
+				<div className="vote">
+					<a>▲</a>
+					<h3 className="votes">{this.props.votes}</h3>
+					<a>▼</a>
+				</div>
+				<div className="post">
+					<h3>{this.props.shitpost}</h3>
+					<img src={this.props.shitimg} />
+				</div>
 			</div>
 		);
 	}
