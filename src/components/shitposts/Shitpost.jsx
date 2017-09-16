@@ -7,6 +7,8 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
 export default class Shitpost extends Component {
 	constructor(props) {
 		super(props);
+		
+		this.showShitpostModal = this.showShitpostModal.bind(this);
 	}
 	
 	getTime() {
@@ -14,6 +16,10 @@ export default class Shitpost extends Component {
 		return MONTHS[time.getMonth()] + " "
 			+ time.getDay() + ", " + time.getFullYear()
 			+ " at " + time.toLocaleTimeString();
+	}
+	
+	showShitpostModal(e) {
+		
 	}
 	
 	render() {
@@ -25,9 +31,14 @@ export default class Shitpost extends Component {
 					<a>▼</a>
 				</div>
 				<div className="post">
-					<h3>{this.props.shitpost}</h3>
-					<h4>{this.getTime()}</h4>
-					<img src={this.props.shitimg} />
+					<h3 onClick={this.showShitpostModal}>
+						{this.props.shitpost}
+					</h3>
+					<h4 onClick={this.showShitpostModal}>
+						{this.getTime()}
+					</h4>
+					<img src={this.props.shitimg}
+						onClick={this.showShitpostModal} />
 				</div>
 			</div>
 		);

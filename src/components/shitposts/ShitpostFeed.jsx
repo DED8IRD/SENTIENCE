@@ -18,7 +18,8 @@ export default class ShitpostFeed extends Component {
 					votes={shit.votes}
 					time={shit.time}
 					shitpost={shit.post}
-					shitimg={shit.img} />
+					shitimg={shit.img}
+					modal={this.props.modal} />
 			);
 			shitposts.push(shitpost);
 		}
