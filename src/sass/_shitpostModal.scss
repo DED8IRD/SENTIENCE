@@ -66,4 +66,25 @@ $win-95-border: inset 2px 2px rgba(255, 255, 255, .4),
 			}
 		}
 	}
+	
+	.menus {
+		position: absolute;
+		top: 42px;
+		left: 14px;
+		height: 30px;
+		font-size: 24px;
+		@include user-select(none);
+		cursor: default;
+		
+		p {
+			margin: 0;
+			margin-right: 16px;
+			letter-spacing: 1px;
+			@include display-inline-block();
+			
+			&::first-letter {
+				text-decoration: underline;
+			}
+		}
+	}
 }
