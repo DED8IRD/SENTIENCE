@@ -1,5 +1,6 @@
 import Inferno from 'inferno';
 import Component from 'inferno-component';
+import ShitpostModal from './ShitpostModal';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
 	'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -19,7 +20,16 @@ export default class Shitpost extends Component {
 	}
 	
 	showShitpostModal(e) {
-		
+		this.props.modal(
+			<ShitpostModal
+					id={this.props.id}
+					name={this.props.name}
+					votes={this.props.votes}
+					time={this.props.time}
+					shitpost={this.props.post}
+					shitimg={this.props.img}
+					modal={this.props.modal} />
+		);
 	}
 	
 	render() {
