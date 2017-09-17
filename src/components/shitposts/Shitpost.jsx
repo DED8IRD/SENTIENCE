@@ -15,7 +15,7 @@ export default class Shitpost extends Component {
 	getTime() {
 		var time = this.props.time;
 		return MONTHS[time.getMonth()] + " "
-			+ time.getDay() + ", " + time.getFullYear()
+			+ time.getDate() + ", " + time.getFullYear()
 			+ " at " + time.toLocaleTimeString();
 	}
 	

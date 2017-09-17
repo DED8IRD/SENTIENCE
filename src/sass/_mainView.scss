@@ -3,10 +3,19 @@ $sentient_pink: #FF67F2;
 
 @import "navbar";
 @import "shitpost";
+@import "shitpostModal";
 
 .shitpost-feed {
 	position: absolute;
 	top: 70px;
 	left: 25%;
 	width: 50%;
+}
+
+.modal-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 }

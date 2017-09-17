@@ -14,7 +14,7 @@ export default class Shitpost extends Component {
 	getTime() {
 		var time = this.props.time;
 		return MONTHS[time.getMonth()] + " "
-			+ time.getDay() + ", " + time.getFullYear()
+			+ time.getDate() + ", " + time.getFullYear()
 			+ " at " + time.toLocaleTimeString();
 	}
 	
@@ -24,12 +24,17 @@ export default class Shitpost extends Component {
 	
 	render() {
 		return (
-			<div className="outer-modal"
-				onClick={this.hideShitpostModal}>
+			<div className="modal-container">
+				<div className="outer-modal"
+					onClick={this.hideShitpostModal}>
+				</div>
 				<div className="shitpost-modal">
-					<div className="Title">
-						<p>{this.props.name} - Sentience</p>
-						<div className="closeMe">X</div>
+					<div className="title">
+						{this.props.name} - Sentience
+						<div className="close-me"
+							onClick={this.hideShitpostModal}>
+							X
+						</div>
 					</div>
 					<div className="menus">
 						<p>File</p>
