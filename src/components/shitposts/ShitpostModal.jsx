@@ -43,14 +43,18 @@ export default class Shitpost extends Component {
 						<p>Help</p>
 						<p>Dream</p>
 					</div>
-					<img src={this.props.shitimg} />
 					<div className="post">
-						<h1>
-							{this.props.shitpost}
-						</h1>
-						<p>
-							{this.getTime()}
-						</p>
+						<div className="img">
+							<img src={this.props.shitimg} />
+						</div>
+						<div className="txt">
+							<h1>
+								{this.props.shitpost}
+							</h1>
+							<p>
+								{this.getTime()}
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>

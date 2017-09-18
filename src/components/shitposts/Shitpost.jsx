@@ -26,8 +26,8 @@ export default class Shitpost extends Component {
 					name={this.props.name}
 					votes={this.props.votes}
 					time={this.props.time}
-					shitpost={this.props.post}
-					shitimg={this.props.img}
+					shitpost={this.props.shitpost}
+					shitimg={this.props.shitimg}
 					modal={this.props.modal} />
 		);
 	}
