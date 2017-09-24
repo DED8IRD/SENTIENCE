@@ -10,6 +10,8 @@ export default class Shitpost extends Component {
 		super(props);
 		
 		this.showShitpostModal = this.showShitpostModal.bind(this);
+		this.upvotePost = this.upvotePost.bind(this);
+		this.downvotePost = this.downvotePost.bind(this);
 	}
 	
 	getTime() {
@@ -32,13 +34,21 @@ export default class Shitpost extends Component {
 		);
 	}
 	
+	upvotePost() {
+		// how 2 upvote???!?
+	}
+	
+	downvotePost() {
+		// how 2 downvote???!?
+	}
+	
 	render() {
 		return (
 			<div className="shitpost">
 				<div className="vote">
-					<a>▲</a>
+					<a onClick={this.upvotePost}>▲</a>
 					<h3 className="votes">{this.props.votes}</h3>
-					<a>▼</a>
+					<a onClick={this.downvotePost}>▼</a>
 				</div>
 				<div className="post">
 					<h3 onClick={this.showShitpostModal}>
