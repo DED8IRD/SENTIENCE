@@ -1,0 +1,17 @@
+@import "sass/mixins";
+@import "sass/myMixins";
+@import "sass/mainView";
+
+body {
+	margin: 0;
+}
+
+html {
+	background: url('./img/background.png') no-repeat center center fixed;
+	@include background-size(cover);
+}
+
+#root {
+	width: 100%;
+	height: 100%;
+}

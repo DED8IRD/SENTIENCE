@@ -1,0 +1,44 @@
+{
+  "name": "sentience",
+  "version": "2.0.0",
+  "description": "S E N T I E N C E",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run buildSass && webpack",
+    "buildDev": "npm run buildSass && webpack --config webpack.config.dev.js",
+	"buildSass": "node-sass --include-path scss ./src/index.scss ./build/index.css --output-style compressed && npm run copyImgs",
+	"copyImgs": "cp -a ./src/img/. ./build/img/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://CarpeSwag@github.com/DED8IRD/SENTIENCE.git"
+  },
+  "keywords": [
+    "SENTIENCE",
+    "WOWEE"
+  ],
+  "author": "Nika Wu, James Garbagnati",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DED8IRD/SENTIENCE/issues"
+  },
+  "homepage": "https://github.com/DED8IRD/SENTIENCE#readme",
+  "dependencies": {
+    "inferno": "^3.9.0",
+    "inferno-component": "^3.9.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-inferno": "^3.2.0",
+    "babel-preset-es2015": "^6.24.1",
+    "css-loader": "^0.28.7",
+    "html-minifier": "^3.5.5",
+    "html-minifier-loader": "^1.4.0",
+    "html-webpack-plugin": "^2.30.1",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
+    "script-loader": "^0.7.1",
+    "webpack": "^3.5.6"
+  }
+}

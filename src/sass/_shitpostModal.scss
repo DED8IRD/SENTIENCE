@@ -1,0 +1,141 @@
+$win-95-bg-color: #999999;
+$win-95-title-color: #000077;
+$win-95-border: inset 2px 2px rgba(255, 255, 255, .4),
+	inset -2px -2px rgba(0, 0, 0, .4);
+
+.outer-modal {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-color: rgba(255, 100, 200, 0.5);
+}
+
+.shitpost-modal {
+	position: absolute;
+	height: 85%;
+	width: 70%;
+	top: 7.5%;
+	left: 15%;
+	background-color: $win-95-bg-color;
+	@include box-shadow($win-95-border);
+	
+	font-family: 'VT323', sans-serif;
+	
+	.title {
+		position: absolute;
+		background-color: $win-95-title-color;
+		left: 7px;
+		top: 7px;
+		width: calc(100% - 34px);
+		height: 26px;
+		padding: 2px 10px;
+		
+		color: #FFFFFF;
+		letter-spacing: 1px;
+		font-size: 25px;
+		@include user-select(none);
+		cursor: default;
+		
+		.close-me {
+			position: absolute;
+			height: 24px;
+			width: 24px;
+			top: 3px;
+			right: 7px;
+			
+			background-color: $win-95-bg-color;
+			@include box-shadow($win-95-border);
+			cursor: pointer;
+			
+			text-align: center;
+			font-size: 20px;
+			color: #000000;
+			
+			&:hover {
+				background-color: #CCCCCC;
+			}
+			
+			&:active {
+				background-color: #666666;
+				@include box-shadow(
+					inset 2px 2px rgba(0, 0, 0, .4),
+					inset -2px -2px rgba(255, 255, 255, .4)
+				);
+			}
+		}
+	}
+	
+	.menus {
+		position: absolute;
+		top: 42px;
+		left: 14px;
+		height: 30px;
+		font-size: 24px;
+		@include user-select(none);
+		cursor: default;
+		
+		p {
+			margin: 0;
+			margin-right: 16px;
+			letter-spacing: 1px;
+			@include display-inline-block();
+			
+			&::first-letter {
+				text-decoration: underline;
+			}
+		}
+	}
+	
+	.post {
+		position: absolute;
+		left: 7px;
+		top: 71px;
+		width: calc(100% - 14px);
+		height: calc(100% - 78px);
+		
+		.img {
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 100%;
+			width: calc(100% - 407px);
+			text-align: center;
+			
+			img {
+				position: relative;
+				top: 50%;
+				@include transform(translate(0, -50%));
+				max-height: calc(100% - 4px);
+				max-width: calc(100% - 4px);
+				width: auto;
+				height: auto;
+				margin: auto;
+			}
+		}
+		
+		.txt {
+			position: absolute;
+			top: 0;
+			right: 0;
+			height: calc(100% - 20px);
+			width: 360px;
+			padding: 10px 20px;
+			background-color: #ffffff;
+			@include box-shadow(
+				inset 2px 2px #555555,
+				inset -2px -2px #aaaaaa
+			);
+			
+			h1 {
+				margin: 0;
+			}
+			
+			p {
+				margin: 0;
+				margin-top: 5px;
+			}
+		}
+	}
+}
