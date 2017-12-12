@@ -1,0 +1,14 @@
+<ul>
+    <li>{{ text_post }}</li>
+    <li>{{ image }}</li>
+    <li>Votes: {{ upvotes }}</li>
+    <li>Created on: {{ created_on }}</li>
+	{% if comments %}
+	<li>Comments: </li>
+	    <ul>
+	    {% for comment in comments %}
+	        <li>{{ comment }}</a></li>
+	    {% endfor %}
+	    </ul>
+    {% endif %} 
+</ul>

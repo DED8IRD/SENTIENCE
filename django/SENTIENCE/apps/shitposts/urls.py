@@ -1,6 +1,8 @@
-from django.urls import path
+from django.conf.urls import url
 from . import views
 
+app_name = 'shitposts'
 urlpatterns = [
-	path('', views.index, name='index'),
+	url(r'^$', views.IndexView.as_view(), name='index'),
+	url(r'^(?P<shitpost_id>[0-9]+)/$', views.detail, name='detail'),
 ]
