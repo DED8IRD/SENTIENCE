@@ -1,14 +1,257 @@
+
 body {
-    background: white url("../images/bkgd.jpg") no-repeat right bottom;
+	margin: auto;
+	background-image: url("../images/background.png");
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	font-variant-ligatures: no-common-ligatures;
+	-webkit-font-variant-ligatures: no-common-ligatures;
 }
 
-.sidebar-nav {
-    margin-top: 20px;
-    padding: 0;
-    list-style: none;
+.navbar-title{
+	position: fixed;
+	top: 0;
+	float: right;
+    list-style-type: none;
+	width: 100%;	
+	padding: 10px;
+	padding-top: 25px;
+	font-size: 25px;
+	/*font-family: "Share Tech Mono", "Courier";*/
+	letter-spacing: 0px;
 }
 
-li a {
-    color: green;
+.navbar-title .ul {
+	display: inline;
 }
 
+/* line 2, ../sass/_main.scss */
+.post_listing {
+  margin: 10px 0px 10px 0px;
+  padding: 0 0 0 0px;
+}
+
+/* line 7, ../sass/_main.scss */
+.post_list {
+  padding-top: 10px;
+}
+
+/* line 11, ../sass/_main.scss */
+
+.SHITPOSTBUTTON {
+  margin: auto;
+}
+
+.navbar-tab {
+  font-size: 20px;
+  letter-spacing: 10px;
+  font-family: "Share Tech Mono", "Courier";
+  padding-top: 22px;
+  padding-right: 16px;
+}
+
+.add-btn {
+  margin-bottom: 32px;
+}
+
+.cancel-btn {
+  margin-top: -89px;
+  margin-right: -10px;
+  height: 38px;
+}
+
+#post-button {
+  margin-right: 90px;
+}
+
+#no_table_edit_post_content {
+  margin: 0px 0px 0px;
+}
+
+.cancel-edit-btn {
+  margin-top: -89px;
+  margin-right: 4px;
+  height: 38px;
+}
+
+.edit-post-button {
+  margin-right: 100px;
+}
+
+.show_more {
+  text-align: center;
+  margin: auto;
+}
+
+.posts {
+  margin-top: -32px;
+}
+
+.post-content {
+  border-width: 1px;
+  padding: 20px;
+  -moz-border-radius: 16px;
+  -webkit-border-radius: 16px;
+  border-radius: 16px;
+  width: 40%;
+  max-width: 800px;
+  margin: 20px auto;
+  margin-bottom: 50px;
+}
+
+@media(max-width: 600px) {
+  .post-content {
+    width: 100%;
+  }
+}
+
+.post-upvote-box {
+  float: left;
+  display: inline-block;
+  width: 50px;
+  text-align: center;
+}
+
+.vote-arrow {
+  text-align: center;
+  width: 50px;
+  letter-spacing: 0px;
+  font-size: 30px;
+}
+
+
+
+.vote-arrow:hover {
+ cursor: pointer;
+}
+
+.no-vote {
+  color: darkgray;
+}
+
+.upvoted {
+  color: #4afafc;
+  text-shadow: 1px 1px #ff67f2;
+}
+
+.downvoted {
+  color: #ff67f2;
+  text-shadow: 1px 1px #4afafc;
+}
+
+.vote-arrow>a:hover {
+  text-decoration: none;
+}
+
+.vote-count {
+  font-size: 16px;
+  letter-spacing: 3px;
+}
+
+.post-text-box {
+  float: right;
+  display: inline-block;
+  width: calc(100% - 60px);
+}
+
+.post-contents {
+  color: #4afafc;
+  text-shadow: 1px 1px #ff67f2;
+  font-family: "Share Tech Mono", "Courier";
+  letter-spacing: 16px;
+  font-size: 24px;
+  font-weight: bold;
+  font-kerning: none;
+}
+
+.post-shitpost:hover {
+  cursor: pointer;
+}
+
+.post_image {
+  width: 100%;
+}
+
+.post_image:hover {
+  cursor: pointer;
+}
+
+.post-datetime {
+  color: #4afafc;
+  text-shadow: 1px 1px #ff67f2;
+  font-family: "VT323", "Courier";
+  letter-spacing: 6px;
+  font-size: 16px;
+  margin-top: -10px;
+  font-kerning: none;
+}
+
+.post-datetime:hover {
+ cursor: pointer;
+}
+
+.post-permalink {
+  display: block;
+  color: #4afafc;
+  text-shadow: 1px 1px #ff67f2;
+  font-family: "VT323", "Courier";
+  letter-spacing: 6px;
+  font-size: 12px;
+  margin-top: -4px;
+  font-kerning: none;
+}
+
+.post-permalink:hover {
+ cursor: pointer;
+}
+
+.info-line {
+  color: #4afafc;
+  text-shadow: 1px 1px #ff67f2;
+  font-family: "VT323", "Courier";
+  letter-spacing: 5px;
+  font-size: 12px;
+  margin-top: -10px;
+  font-kerning: none;
+}
+
+.hidden {
+  display: none;
+}
+
+.shifted {
+  margin-left: 20px;
+}
+
+/* Comment Page */
+.comment {
+  color: #4afafc;
+  text-shadow: 1px 1px #ff67f2;
+  font-family: "Share Tech Mono", "Courier";
+  letter-spacing: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  font-kerning: none;
+}
+
+.comment-date {
+  margin-left: 16px;
+}
+
+
+/* Login page */
+.login_title {
+  margin-left: 30%;
+  letter-spacing: 16px;
+  font-family: "Share Tech Mono", "Courier"
+}
+
+.login_container {
+  margin-left: 30%;
+  margin-right: 30%;
+}

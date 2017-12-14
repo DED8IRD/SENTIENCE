@@ -10,6 +10,7 @@ from .models import Shitpost, Post_Comment
 class IndexView(generic.ListView):
     template_name = 'shitposts/index.html'
     context_object_name = 'post_list'
+    paginate_by = 5
 
     def get_queryset(self):
         """
@@ -44,6 +45,10 @@ class DetailView(generic.DetailView):
         return context        
 
 
+# def vote(request, shitpost_id):
+#     return HttpResponse("Voting on shitpost #%s" % shitpost_id)
+
+
 # def index(request):
 #     post_list = Shitpost.objects.filter(
 #         created_on__lte=timezone.now()
@@ -67,6 +72,3 @@ class DetailView(generic.DetailView):
 #     }
 #     return render(request, 'shitposts/detail.html', context)
 
-
-# def vote(request, shitpost_id):
-#     return HttpResponse("Voting on shitpost #%s" % shitpost_id)
