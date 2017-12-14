@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'apps.content_generator.apps.ContentGeneratorConfig',
     'apps.shitposts.apps.ShitpostsConfig',
     'django.contrib.admin',
     'django.contrib.auth',

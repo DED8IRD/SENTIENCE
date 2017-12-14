@@ -4,6 +4,7 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
+
 class Shitpost(models.Model):
     text_post = models.TextField()
     image = models.TextField()
@@ -11,10 +12,7 @@ class Shitpost(models.Model):
     created_on = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return ("Text: " + self.text_post + "\n" +
-                "File: " + self.image + "\n" +
-                "Upvotes: " + str(self.upvotes) + "\n" +
-                "Date: " + self.created_on.strftime('%Y-%m-%d %H:%M:%S') + "\n")
+        return self.text_post
 
 
 class Post_Comment(models.Model):
@@ -31,9 +29,7 @@ class Post_Comment(models.Model):
     def __str__(self):
         return ("Post: " +  str(self.shitpost.id) + "\n" +
                 # "Author: " + self.username + "\n" +
-                "Comment: " + self.comment_content + "\n" +
-                "Created on: " + self.created_on.strftime('%Y-%m-%d %H:%M:%S') + "\n" +
-                "Updated on: " + ("N/A" if not self.updated_on else self.updated_on.strftime('%Y-%m-%d %H:%M:%S')) + "\n")
+                "Comment: " + self.comment_content + "\n")
 
 
 # class Votelog(models.Model):

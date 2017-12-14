@@ -1,6 +1,11 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'shitposts/css/style.css' %}" />
+
 <ul>
     <li>{{ text_post }}</li>
-    <li>{{ image }}</li>
+    <li>
+		<img src="{% static 'shitposts/images/gen' %}/{{image}}"/>
+	</li>
     <li>Votes: {{ upvotes }}</li>
     <li>Created on: {{ created_on }}</li>
 	{% if comments %}

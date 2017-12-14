@@ -1,9 +1,21 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'shitposts/css/style.css' %}" />
+
 {% if post_list %}
     <ul>
     {% for post in post_list %}
-        <li><a href="{% url 'shitposts:detail' post.id %}">{{ post.text_post }}</a></li>
+    	<div id="post">
+	        <li>
+	        	<a href="{% url 'shitposts:detail' post.id %}">{{ post.text_post }}</a>
+	        </li>    		
+	        <li>
+	        	<a href="{% url 'shitposts:detail' post.id %}">
+	        		<img src="{% static 'shitposts/images/gen' %}/{{post.image}}"/></a>
+	        </li>    		
+    	</div>
+    	<br/>
     {% endfor %}
     </ul>
 {% else %}
-    <p>No posts are available.</p>
+    <p>S E N T I E N C E  unavailable.</p>
 {% endif %}
