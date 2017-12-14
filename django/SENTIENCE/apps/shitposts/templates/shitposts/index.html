@@ -1,21 +1,20 @@
+{% extends "base_generic.html" %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'shitposts/css/style.css' %}" />
 
-{% if post_list %}
-    <ul>
-    {% for post in post_list %}
-    	<div id="post">
-	        <li>
-	        	<a href="{% url 'shitposts:detail' post.id %}">{{ post.text_post }}</a>
-	        </li>    		
-	        <li>
-	        	<a href="{% url 'shitposts:detail' post.id %}">
-	        		<img src="{% static 'shitposts/images/gen' %}/{{post.image}}"/></a>
-	        </li>    		
-    	</div>
-    	<br/>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>S E N T I E N C E  unavailable.</p>
-{% endif %}
+{% block content %}
+
+	{% if post_list %}
+	    {% for post in post_list %}
+	    	<div id="post">
+		        	<a href="{% url 'shitposts:detail' post.id %}">{{ post.text_post }}</a>
+		        	<a href="{% url 'shitposts:detail' post.id %}">
+		        		<img src="{% static 'images/gen' %}/{{post.image}}"/></a>
+	    	</div>
+	    	<br/>
+	    {% endfor %}
+	    </ul>
+	{% else %}
+	    <p>S E N T I E N C E  unavailable.</p>
+	{% endif %}
+
+{% endblock %}

@@ -1,19 +1,23 @@
+{% extends "base_generic.html" %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'shitposts/css/style.css' %}" />
 
-<ul>
-    <li>{{ text_post }}</li>
-    <li>
-		<img src="{% static 'shitposts/images/gen' %}/{{image}}"/>
-	</li>
-    <li>Votes: {{ upvotes }}</li>
-    <li>Created on: {{ created_on }}</li>
-	{% if comments %}
-	<li>Comments: </li>
-	    <ul>
-	    {% for comment in comments %}
-	        <li>{{ comment }}</a></li>
-	    {% endfor %}
-	    </ul>
-    {% endif %} 
-</ul>
+{% block content %}
+
+	<ul>
+	    <li>{{ shitpost.text_post }}</li>
+	    <li>
+			<img src="{% static 'images/gen' %}/{{shitpost.image}}"/>
+		</li>
+	    <li>Votes: {{ shitpost.upvotes }}</li>
+	    <li>Created on: {{ shitpost.created_on }}</li>
+		{% if comments %}
+		<li>Comments: </li>
+		    <ul>
+		    {% for comment in comments %}
+		        <li>{{ comment }}</a></li>
+		    {% endfor %}
+		    </ul>
+	    {% endif %} 
+	</ul>
+
+{% endblock %}

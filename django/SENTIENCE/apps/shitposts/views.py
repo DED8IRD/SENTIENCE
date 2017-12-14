@@ -22,9 +22,26 @@ class IndexView(generic.ListView):
         # [:4]
 
 
-# class DetailView(generic.DetailView):
-#     model = Shitpost
-#     template_name = 'shitposts/detail.html'
+class DetailView(generic.DetailView):
+    model = Shitpost
+    template_name = 'shitposts/detail.html'
+
+    def get_queryset(self):
+        """
+        Only display posts published in the past.
+        """
+        return Shitpost.objects.filter(
+            created_on__lte=timezone.now()
+        )
+
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(DetailView, self).get_context_data(**kwargs)
+        # Add in a QuerySet to get comments
+        comments = Post_Comment.objects.all().filter(shitpost=context['shitpost'])
+        context['comments'] = comments
+        return context        
 
 
 # def index(request):
@@ -37,18 +54,18 @@ class IndexView(generic.ListView):
 #     return render(request, 'shitposts/index.html', context)
 
 
-def detail(request, shitpost_id):
-    post = get_object_or_404(Shitpost, id=shitpost_id)
-    comments = Post_Comment.objects.all().filter(shitpost=shitpost_id)
-    context = {
-        'id': post.id,
-        'text_post': post.text_post,
-        'image': post.image,
-        'upvotes': post.upvotes,
-        'created_on': post.created_on,
-        'comments': comments
-    }
-    return render(request, 'shitposts/detail.html', context)
+# def detail(request, shitpost_id):
+#     post = get_object_or_404(Shitpost, id=shitpost_id)
+#     comments = Post_Comment.objects.all().filter(shitpost=shitpost_id)
+#     context = {
+#         'id': post.id,
+#         'text_post': post.text_post,
+#         'image': post.image,
+#         'upvotes': post.upvotes,
+#         'created_on': post.created_on,
+#         'comments': comments
+#     }
+#     return render(request, 'shitposts/detail.html', context)
 
 
 # def vote(request, shitpost_id):

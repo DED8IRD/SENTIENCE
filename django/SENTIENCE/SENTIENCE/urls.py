@@ -15,8 +15,17 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.generic import RedirectView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
 	url(r'^posts/', include('apps.shitposts.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^.*$', RedirectView.as_view(url='/posts/', permanent=True), name='index')
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+#Add Django site authentication urls (for login, logout, password management)
+urlpatterns += [
+    url(r'^accounts/', include('django.contrib.auth.urls')),
 ]

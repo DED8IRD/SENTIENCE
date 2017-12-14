@@ -1,0 +1,14 @@
+body {
+    background: white url("../images/bkgd.jpg") no-repeat right bottom;
+}
+
+.sidebar-nav {
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+li a {
+    color: green;
+}
+
