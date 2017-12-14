@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 urlpatterns = [
 	url(r'^posts/', include('apps.shitposts.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^.*$', RedirectView.as_view(url='/posts/', permanent=True), name='index')
+    url(r'^$', RedirectView.as_view(url='/posts/', permanent=True), name='index')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 #Add Django site authentication urls (for login, logout, password management)

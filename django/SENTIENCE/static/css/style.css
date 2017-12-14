@@ -1,7 +1,8 @@
 
 body {
 	margin: auto;
-	background-image: url("../images/background.png");
+  background-color: white;
+	/*background-image: url("../images/background.png");*/
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
