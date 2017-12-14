@@ -2,9 +2,48 @@
 from __future__ import unicode_literals
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
+from django.contrib.auth.decorators import permission_required
 from django.utils import timezone
+from django.contrib.staticfiles.storage import staticfiles_storage as static
+import os
+import json
 
 from .models import Shitpost, Post_Comment
+from modules.text_generator import sentence_generator
+from modules.image_generator import image_generator
+
+# @permission_required('')
+def generate_post(request):
+    """
+    Generates shitpost.
+    """
+    sp = Shitpost(text_post=generate_text(),
+                  image=generate_image())
+    sp.save()
+    return render(request, 'shitposts/index.html')
+
+def generate_text():
+    """
+    NLP Markov-chain text generation.
+    """
+    src_path = static.path('nlp/post_compilation.json')
+    with open(src_path) as post_comp:
+        ngrams = json.load(post_comp)
+        gen = sentence_generator(ngrams)
+        return gen().encode('utf-8')
+
+
+def generate_image():
+    """
+    Generates original image
+    """
+    bkgd_path = static.path('images/src/bkgd')
+    back_overlay_path = static.path('images/src/back overlays')
+    overlay_path = static.path('images/src/')
+    vector_path = static.path('images/src/vectors')
+    dest_path = static.path('images/gen')
+    gen = image_generator(bkgd_path, back_overlay_path, overlay_path, vector_path, dest_path)
+    return gen()
 
 
 class IndexView(generic.ListView):

@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/posts/', permanent=True), name='index')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
+
 #Add Django site authentication urls (for login, logout, password management)
 urlpatterns += [
     url(r'^accounts/', include('django.contrib.auth.urls')),

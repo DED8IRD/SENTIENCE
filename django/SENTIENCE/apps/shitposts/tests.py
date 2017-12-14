@@ -38,7 +38,7 @@ class ShitpostIndexViewTests(TestCase):
         response = self.client.get(reverse('shitposts:index'))
         self.assertQuerysetEqual(
             response.context['post_list'],
-            ['<Shitpost: Text: Old post>']
+            ['<Shitpost: Old post>']
         )
 
     def test_future_post(self):
@@ -60,7 +60,7 @@ class ShitpostIndexViewTests(TestCase):
         response = self.client.get(reverse('shitposts:index'))
         self.assertQuerysetEqual(
             response.context['post_list'],
-            ['<Shitpost: Text: Old post>']
+            ['<Shitpost: Old post>']
         )
 
 
@@ -73,8 +73,8 @@ class ShitpostIndexViewTests(TestCase):
         response = self.client.get(reverse('shitposts:index'))
         self.assertQuerysetEqual(
             response.context['post_list'],
-            ['<Shitpost: Text: Old post 2>', 
-             '<Shitpost: Text: Old post 1>']
+            ['<Shitpost: Old post 2>', 
+             '<Shitpost: Old post 1>']
         )
 
 

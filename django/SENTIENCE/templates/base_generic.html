@@ -14,10 +14,14 @@
 
 <body>
 	<div class="container-fluid">
+
 		<div class="row">
 			<div class="col-sm-2">
 			{% block sidebar %}
 				<ul class="navbar-title">
+		
+				<li><a href="{% url 'shitposts:generate' %}">Generate S E N T I E N C E</a></li>
+
 				<li><a href="{% url 'index' %}">Home</a></li>
 				<li><a href="">Best</a></li>
 				<li><a href="">Contributors</a></li>

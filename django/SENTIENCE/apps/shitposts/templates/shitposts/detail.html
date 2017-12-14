@@ -3,21 +3,22 @@
 
 {% block content %}
 
-	<ul>
-	    <li>{{ shitpost.text_post }}</li>
-	    <li>
+	
+	    {{ shitpost.text_post }}
+	    
 			<img src="{% static 'images/gen' %}/{{shitpost.image}}"/>
-		</li>
-	    <li>Votes: {{ shitpost.upvotes }}</li>
-	    <li>Created on: {{ shitpost.created_on }}</li>
+		
+	    Votes: {{ shitpost.upvotes }}
+	    Created on: {{ shitpost.created_on }}
+	    
 		{% if comments %}
-		<li>Comments: </li>
-		    <ul>
+		Comments: 
+		    
 		    {% for comment in comments %}
-		        <li>{{ comment }}</a></li>
+		        {{ comment }}</a>
 		    {% endfor %}
-		    </ul>
+
 	    {% endif %} 
-	</ul>
+
 
 {% endblock %}
