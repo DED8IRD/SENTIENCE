@@ -6,7 +6,7 @@
 	
 	    {{ shitpost.text_post }}
 	    
-			<img src="{% static 'images/gen' %}/{{shitpost.image}}"/>
+			<img src="{% get_media_prefix %}/images/gen/{{shitpost.image}}"/>
 		
 	    Votes: {{ shitpost.upvotes }}
 	    Created on: {{ shitpost.created_on }}

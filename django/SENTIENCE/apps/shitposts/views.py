@@ -4,13 +4,17 @@ from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.contrib.auth.decorators import permission_required
 from django.utils import timezone
-from django.contrib.staticfiles.storage import staticfiles_storage as static
+from django.conf import settings
+
 import os
 import json
 
 from .models import Shitpost, Post_Comment
 from modules.text_generator import sentence_generator
 from modules.image_generator import image_generator
+
+STATIC_URL = settings.STATIC_ROOT
+MEDIA_URL = settings.MEDIA_ROOT
 
 # @permission_required('')
 def generate_post(request):
@@ -26,7 +30,7 @@ def generate_text():
     """
     NLP Markov-chain text generation.
     """
-    src_path = static.path('nlp/post_compilation.json')
+    src_path = os.path.join(STATIC_URL, ('nlp/post_compilation.json'))
     with open(src_path) as post_comp:
         ngrams = json.load(post_comp)
         gen = sentence_generator(ngrams)
@@ -37,11 +41,11 @@ def generate_image():
     """
     Generates original image
     """
-    bkgd_path = static.path('images/src/bkgd')
-    back_overlay_path = static.path('images/src/back overlays')
-    overlay_path = static.path('images/src/')
-    vector_path = static.path('images/src/vectors')
-    dest_path = static.path('images/gen')
+    bkgd_path = os.path.join(STATIC_URL, ('images/src/bkgd'))
+    back_overlay_path = os.path.join(STATIC_URL, ('images/src/back overlays'))
+    overlay_path = os.path.join(STATIC_URL, ('images/src/'))
+    vector_path = os.path.join(STATIC_URL, ('images/src/vectors'))
+    dest_path = os.path.join(MEDIA_URL, ('images/gen'))
     gen = image_generator(bkgd_path, back_overlay_path, overlay_path, vector_path, dest_path)
     return gen()
 

@@ -14,7 +14,7 @@
 	    			<p onclick="open_lightbox({{post.id}});" class="post-shitpost">{{ post.text_post }}</p>
 		        	<a href="{% url 'shitposts:detail' post.id %}" class="post-permalink">(permalink)</a>
 		        	<a href="{% url 'shitposts:detail' post.id %}">
-		        		<img src="{% static 'images/gen' %}/{{ post.image }}"/></a>
+		        		<img src="{% get_media_prefix %}/images/gen/{{ post.image }}"/></a>
 	    		</div>
 
 	            {% if has_more %}
@@ -42,7 +42,7 @@
 		                        <p><u>D</u>ream</p>
 		                    </div>
 		                    <div class="win95-image">
-				        		<img src="{% static 'images/gen' %}/{{ post.image }}" class="post_image" />
+				        		<img src="{% get_media_prefix %}/images/gen/{{ post.image }}" class="post_image" />
 		                    </div>
 		                    <div class="win95-text">
 		                        <div class="post-contents post-text-box">
