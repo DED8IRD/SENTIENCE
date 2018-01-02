@@ -1,0 +1,601 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.IOError'> [Errno 21] Is a directory: u'/home/DED8IRD/SENTIENCE/applications/init/static/images/src/vectors'"
+p3
+sS'layer'
+p4
+S'/home/DED8IRD/SENTIENCE/applications/init/controllers/api.py'
+p5
+sS'code'
+p6
+S'from __future__ import unicode_literals\nimport json\nimport os\nfrom generator import sentGenerator\nfrom image_generator import image_generator\n\n\ndef generate_text():\n    """\n    nlg text gen\n    """\n    file_path = os.path.join(request.folder, \'static\', \'json\', \'post_compilation.json\')\n    with open(file_path) as post_comp:\n        ngrams = json.load(post_comp)\n        gen = sentGenerator(ngrams)\n        return gen().encode(\'utf-8\')\n\n\ndef generate_image():\n    """\n    Generates original image\n    """\n    bkgd_path = os.path.join(request.folder, \'static\', \'images\', \'src\', \'bkgd\')\n    back_overlay_path = os.path.join(request.folder, \'static\', \'images\', \'src\', \'back overlays\')\n    overlay_path = os.path.join(request.folder, \'static\', \'images\', \'src\')\n    vector_path = os.path.join(request.folder, \'static\', \'images\', \'src\', \'vectors\')\n    dest_path = os.path.join(request.folder, \'static\', \'images\', \'gen\')\n    gen = image_generator(bkgd_path, back_overlay_path, overlay_path, vector_path, dest_path)\n    return gen()\n\n\ndef generate_post():\n    p_id = db.shitpost.insert(\n        text_post = generate_text(),\n        image = generate_image()\n    )\n    p = db.shitpost(p_id)\n    return response.json(dict(post=p))\n\n\n# These are the controllers for your ajax api.\ndef get_posts():\n    """This controller is used to get the posts.  Follow what we did in lecture 10, to ensure\n    that the first time, we get 4 posts max, and each time the "load more" button is pressed,\n    we load at most 4 more posts."""\n    start_idx = int(request.vars.start_idx) if request.vars.start_idx is not None else 0\n    end_idx = int(request.vars.end_idx) if request.vars.end_idx is not None else 0\n    # We just generate a lot of of data.\n    posts = []\n    has_more = False\n    rows = db().select(db.shitpost.ALL, orderby=~db.shitpost.created_on, limitby=(start_idx, end_idx + 1))\n    for i, r in enumerate(rows):\n        if i < end_idx - start_idx:\n            sp = get_post_output(r)\n            posts.append(sp)\n            #comments = db(db.post_comment.shitpost==r.id).select(db.post_comment.ALL, orderby=~db.post_comment.created_on, limitby=(0,4))\n        else:\n            has_more = True\n    logged_in = auth.user_id is not None\n    return response.json(dict(\n        posts=posts,\n        logged_in=logged_in,\n        has_more=has_more\n    ))\n\n\ndef get_best_posts():\n    start_idx = int(request.vars.start_idx) if request.vars.start_idx is not None else 0\n    end_idx = 25\n    # We just generate a lot of of data.\n    posts = []\n    has_more = False\n    posts = []\n    rows = db().select(db.shitpost.ALL, orderby=~db.shitpost.upvotes, limitby=(start_idx, end_idx))\n    for i, r in enumerate(rows):\n        if i < end_idx - start_idx:\n            sp = get_post_output(r)\n            posts.append(sp)\n        else:\n            has_more = True\n    logged_in = auth.user_id is not None\n    return response.json(dict(\n        posts=posts,\n        logged_in=logged_in,\n        has_more=has_more\n    ))\n\n\ndef view_post():\n    post = db.shitpost[request.args(0)] or redirect(URL(r=request, f=\'index\'))\n    sp = get_post_output(post)\n    list = db(db.post_comment.shitpost==post.id).select(db.post_comment.ALL)\n    comments = []\n    logged_in = auth.user_id is not None\n    for comment in list:\n        comments.append(get_comment_output(comment))\n    return response.json(dict(\n        post=sp,\n        comments=comments,\n        logged_in=logged_in\n    ))\n\n\n# Note that we need the URL to be signed, as this changes the db.\n# @auth.requires_signature()\ndef add_comment():\n    """Here you get a new post and add it.  Return what you want."""\n    post = db.shitpost[request.args(0)] or redirect(URL(r=request, f=\'index\'))\n    c_id =  db.post_comment.insert(\n        shitpost=post.id,\n        comment_content=request.vars.comment_content\n    )\n    c = get_comment_output(db.post_comment(c_id))\n    return response.json(dict(comment=c))\n\n\n@auth.requires_signature()\ndef del_comment():\n    """Used to delete a comment."""\n    comment = db.post_comment[request.vars.comment_id]\n    if not auth.user or comment.user_email != auth.user.email:\n        return "no"\n    db( db.post_comment.id == request.vars.comment_id).delete()\n    return "ok"\n\n\n@auth.requires_signature()\ndef edit_comment():\n    """Used to edit a comment."""\n    comment = db.post_comment[request.vars.comment_id]\n    if not auth.user or comment.user_email != auth.user.email:\n        return "no"\n    db( db.post_comment.id == request.vars.comment_id).update(comment_content = request.vars.comment_content)\n    return "{0}{1}".format("Edited On ", comment.updated_on)\n\n\n@auth.requires_signature()\ndef vote():\n    """Used to vote on a post."""\n    if not auth.user:\n        return response.json(dict(\n            success="no"\n        ))\n    post = db.shitpost[request.vars.post_id]\n    list = db(db.votelog.shitpost == post.id).select(db.votelog.ALL)\n    my_vote = None\n    for vote in list:\n        if vote.user_email == auth.user.email:\n            my_vote = vote\n            break\n\n    success = False\n    new_value = post.upvotes\n    vote_value = int(request.vars.vote_value)\n    succ = ""\n    # Vote\n    if my_vote is None:\n        v_id = db.votelog.insert(\n            shitpost = post,\n            is_upvote = True if vote_value == 1 else False\n        )\n        new_value = post.upvotes + vote_value\n        db(db.shitpost.id == post.id).update(upvotes = new_value)\n        v = db.votelog(v_id)\n        success = True\n        succ = "vote"\n    else:\n        # Delete vote\n        if (my_vote.is_upvote and vote_value == 1) or \\\n           (not my_vote.is_upvote and vote_value == -1):\n            db(db.votelog.id == my_vote.id).delete()\n            new_value = post.upvotes - vote_value\n            db(db.shitpost.id == post.id).update(upvotes=new_value)\n            success = True\n            succ = "del"\n        else:\n            db(db.votelog.id == my_vote.id).update(is_upvote = not my_vote.is_upvote)\n            new_value = post.upvotes + vote_value * 2\n            db(db.shitpost.id == post.id).update(upvotes=new_value)\n\n            success = True\n            succ = "vote"\n\n    if success:\n        return response.json(dict(\n            success=succ,\n            count = new_value\n        ))\n    return response.json(dict(\n        success="no"\n    ))\n\n\n# Utility functions\ndef get_user_name_from_email(email):\n    """Returns a string corresponding to the user first and last names,\n    given the user email."""\n    u = db(db.auth_user.email == email).select().first()\n    if u is None:\n        return \'None\'\n    else:\n        return \' \'.join([u.first_name, u.last_name])\n\n\ndef get_comment_output(comment):\n    id = comment.id\n    shitpost_id = comment.shitpost\n    user_email = comment.user_email\n    comment_content = comment.comment_content\n    user_name = (comment.username if comment.username is not None \\\n                 else get_user_name_from_email(user_email))\n    created_on = comment.created_on\n    updated = comment.created_on != comment.updated_on\n    updated_on = "" if not updated else "{0}{1}".format("Edited On ", comment.updated_on)\n    is_mine = auth.user and user_email == auth.user.email\n    return dict(\n                id=id,\n                shitpost=shitpost_id,\n                user_email=user_email,\n                comment_content=comment_content,\n                user_name=user_name,\n                created_on=created_on,\n                updated=updated,\n                updated_on=updated_on,\n                is_mine=is_mine\n            )\n\ndef get_post_output(post):\n    id = post.id\n    text_post = post.text_post\n    image = post.image\n    upvotes = post.upvotes\n    created_on = post.created_on\n    my_vote = 0\n    if auth.user:\n        list = db(db.votelog.shitpost == post.id).select(db.votelog.ALL)\n        my_vote = None\n        for vote in list:\n            if vote.user_email == auth.user.email:\n                my_vote = vote\n                break\n        if my_vote is not None:\n            my_vote = 1 if my_vote.is_upvote else -1\n        else:\n            my_vote = 0\n    return dict(\n        id=id,\n        my_vote=my_vote,\n        text_post=text_post,\n        image=image,\n        upvotes=upvotes,\n        created_on=created_on,\n    )\n\nresponse._vars=response._caller(generate_post)\n'
+p7
+sS'snapshot'
+p8
+(dp9
+S'exception'
+p10
+(dp11
+S'__getslice__'
+p12
+S"<method-wrapper '__getslice__' of exceptions.IOError object>"
+p13
+sS'__str__'
+p14
+S"<method-wrapper '__str__' of exceptions.IOError object>"
+p15
+sS'__reduce__'
+p16
+S'<built-in method __reduce__ of exceptions.IOError object>'
+p17
+sS'__dict__'
+p18
+S'{}'
+p19
+sS'__sizeof__'
+p20
+S'<built-in method __sizeof__ of exceptions.IOError object>'
+p21
+sS'__init__'
+p22
+S"<method-wrapper '__init__' of exceptions.IOError object>"
+p23
+sS'__setattr__'
+p24
+S"<method-wrapper '__setattr__' of exceptions.IOError object>"
+p25
+sS'__reduce_ex__'
+p26
+S'<built-in method __reduce_ex__ of exceptions.IOError object>'
+p27
+sS'__new__'
+p28
+S'<built-in method __new__ of type object>'
+p29
+sS'errno'
+p30
+S'21'
+p31
+sS'__format__'
+p32
+S'<built-in method __format__ of exceptions.IOError object>'
+p33
+sS'__class__'
+p34
+S"<type 'exceptions.IOError'>"
+p35
+sS'filename'
+p36
+S"u'/home/DED8IRD/SENTIENCE/applications/init/static/images/src/vectors'"
+p37
+sS'__doc__'
+p38
+S"'I/O operation failed.'"
+p39
+sS'__getitem__'
+p40
+S"<method-wrapper '__getitem__' of exceptions.IOError object>"
+p41
+sS'__setstate__'
+p42
+S'<built-in method __setstate__ of exceptions.IOError object>'
+p43
+sS'__getattribute__'
+p44
+S"<method-wrapper '__getattribute__' of exceptions.IOError object>"
+p45
+sS'args'
+p46
+S"(21, 'Is a directory')"
+p47
+sS'__subclasshook__'
+p48
+S'<built-in method __subclasshook__ of type object>'
+p49
+sS'__unicode__'
+p50
+S'<built-in method __unicode__ of exceptions.IOError object>'
+p51
+sS'strerror'
+p52
+S"'Is a directory'"
+p53
+sS'__delattr__'
+p54
+S"<method-wrapper '__delattr__' of exceptions.IOError object>"
+p55
+sS'__repr__'
+p56
+S"<method-wrapper '__repr__' of exceptions.IOError object>"
+p57
+sS'__hash__'
+p58
+S"<method-wrapper '__hash__' of exceptions.IOError object>"
+p59
+ssS'evalue'
+p60
+S"[Errno 21] Is a directory: u'/home/DED8IRD/SENTIENCE/applications/init/static/images/src/vectors'"
+p61
+sS'request'
+p62
+cgluon.html
+XML_unpickle
+p63
+(S's\x8bV\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">ajax</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">application</td><td style="vertical-align:top;">:</td><td><div>init</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cid</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">client</td><td style="vertical-align:top;">:</td><td><div>169.233.230.70</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">controller</td><td style="vertical-align:top;">:</td><td><div>api</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_init</td><td style="vertical-align:top;">:</td><td><div>27:3f558f35-a3d8-4479-b891-2f4077938863<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_sentience</td><td style="vertical-align:top;">:</td><td><div>1:c10ae424-dea9-487a-89ca-abf4c091ec8a<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_welcome</td><td style="vertical-align:top;">:</td><td><div>169.233.232.243-6cae5e7d-5112-4bb8-a92a-4aaf76befcf2<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">env</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">CONTENT_LENGTH</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">CONTENT_TYPE</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">DOCUMENT_ROOT</td><td style="vertical-align:top;">:</td><td><div>/usr/local/openresty/nginx/html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT</td><td style="vertical-align:top;">:</td><td><div>*/*</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_ENCODING</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate, sdch</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_LANGUAGE</td><td style="vertical-align:top;">:</td><td><div>en-US,en;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CONNECTION</td><td style="vertical-align:top;">:</td><td><div>close</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_COOKIE</td><td style="vertical-align:top;">:</td><td><div>session_id_welcome=169.233.232.243-6cae5e7d-5112-4bb8-a92a-4aaf76befcf2; session_id_sentience=&quot;1:c10ae424-dea9-487a-89ca-abf4c091ec8a&quot;; _ga=GA1.2.838978908.1480391722; session_id_init=&quot;27:3f558f35-a3d8-4479-b891-2f4077938863&quot;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_DNT</td><td style="vertical-align:top;">:</td><td><div>1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_HOST</td><td style="vertical-align:top;">:</td><td><div>ded8ird.pythonanywhere.com</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_REFERER</td><td style="vertical-align:top;">:</td><td><div>http://ded8ird.pythonanywhere.com/init/default/index</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_USER_AGENT</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_X_FORWARDED_FOR</td><td style="vertical-align:top;">:</td><td><div>169.233.230.70</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_X_REAL_IP</td><td style="vertical-align:top;">:</td><td><div>169.233.230.70</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_X_REQUESTED_WITH</td><td style="vertical-align:top;">:</td><td><div>XMLHttpRequest</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">PATH_INFO</td><td style="vertical-align:top;">:</td><td><div>/init/api/generate_post</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">QUERY_STRING</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_ADDR</td><td style="vertical-align:top;">:</td><td><div>10.47.203.135</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_PORT</td><td style="vertical-align:top;">:</td><td><div>38425</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REQUEST_METHOD</td><td style="vertical-align:top;">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REQUEST_URI</td><td style="vertical-align:top;">:</td><td><div>/init/api/generate_post</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SCRIPT_NAME</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_NAME</td><td style="vertical-align:top;">:</td><td><div>ded8ird.pythonanywhere.com</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PORT</td><td style="vertical-align:top;">:</td><td><div>80</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PROTOCOL</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;/home/DED8IRD/SENTIENCE/applications/admin/&#x27;, &#x27;/home/DED8IRD/SENTIENCE/applications/init/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>/home/DED8IRD/SENTIENCE</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">content_length</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">content_type</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;init&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">document_root</td><td style="vertical-align:top;">:</td><td><div>/usr/local/openresty/nginx/html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>/home/DED8IRD/SENTIENCE</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept</td><td style="vertical-align:top;">:</td><td><div>*/*</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_encoding</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate, sdch</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_language</td><td style="vertical-align:top;">:</td><td><div>en-US,en;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_connection</td><td style="vertical-align:top;">:</td><td><div>close</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_cookie</td><td style="vertical-align:top;">:</td><td><div>session_id_welcome=169.233.232.243-6cae5e7d-5112-4bb8-a92a-4aaf76befcf2; session_id_sentience=&quot;1:c10ae424-dea9-487a-89ca-abf4c091ec8a&quot;; _ga=GA1.2.838978908.1480391722; session_id_init=&quot;27:3f558f35-a3d8-4479-b891-2f4077938863&quot;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_dnt</td><td style="vertical-align:top;">:</td><td><div>1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_host</td><td style="vertical-align:top;">:</td><td><div>ded8ird.pythonanywhere.com</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_referer</td><td style="vertical-align:top;">:</td><td><div>http://ded8ird.pythonanywhere.com/init/default/index</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_user_agent</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_x_forwarded_for</td><td style="vertical-align:top;">:</td><td><div>169.233.230.70</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_x_real_ip</td><td style="vertical-align:top;">:</td><td><div>169.233.230.70</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_x_requested_with</td><td style="vertical-align:top;">:</td><td><div>XMLHttpRequest</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>harry-liveweb7</div></td></tr><tr><td><div>ded8ird.pythonanywhere.com</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>50.19.109.98</div></td></tr><tr><td><div>localhost</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path_info</td><td style="vertical-align:top;">:</td><td><div>/init/api/generate_post</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">query_string</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_addr</td><td style="vertical-align:top;">:</td><td><div>10.47.203.135</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_port</td><td style="vertical-align:top;">:</td><td><div>38425</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_method</td><td style="vertical-align:top;">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_uri</td><td style="vertical-align:top;">:</td><td><div>/init/api/generate_post</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">script_name</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_name</td><td style="vertical-align:top;">:</td><td><div>ded8ird.pythonanywhere.com</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_port</td><td style="vertical-align:top;">:</td><td><div>80</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_protocol</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">uwsgi.node</td><td style="vertical-align:top;">:</td><td><div>harry-liveweb7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">uwsgi.version</td><td style="vertical-align:top;">:</td><td><div>2.0.5.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">uwsgi_node</td><td style="vertical-align:top;">:</td><td><div>harry-liveweb7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">uwsgi_version</td><td style="vertical-align:top;">:</td><td><div>2.0.5.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_path</td><td style="vertical-align:top;">:</td><td><div>/home/DED8IRD/SENTIENCE</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.14.6-stable+timestamp.2016.05.10.00.21.47</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.errors</td><td style="vertical-align:top;">:</td><td><div>&lt;uwsgi_file__bin_user_wsgi_wrapper.ErrorLogFile object at 0x7fad2e9b8950&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;built-in function uwsgi_sendfile&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.input</td><td style="vertical-align:top;">:</td><td><div>&lt;uwsgi._Input object at 0x7fad38edbd20&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multiprocess</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multithread</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_errors</td><td style="vertical-align:top;">:</td><td><div>&lt;uwsgi_file__bin_user_wsgi_wrapper.ErrorLogFile object at 0x7fad2e9b8950&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;built-in function uwsgi_sendfile&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_input</td><td style="vertical-align:top;">:</td><td><div>&lt;uwsgi._Input object at 0x7fad38edbd20&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multiprocess</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multithread</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">extension</td><td style="vertical-align:top;">:</td><td><div>html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">folder</td><td style="vertical-align:top;">:</td><td><div>/home/DED8IRD/SENTIENCE/applications/init/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">function</td><td style="vertical-align:top;">:</td><td><div>generate_post</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">global_settings</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;/home/DED8IRD/SENTIENCE/applications/admin/&#x27;, &#x27;/home/DED8IRD/SENTIENCE/applications/init/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>/home/DED8IRD/SENTIENCE</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;init&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>/home/DED8IRD/SENTIENCE</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>harry-liveweb7</div></td></tr><tr><td><div>ded8ird.pythonanywhere.com</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>50.19.109.98</div></td></tr><tr><td><div>localhost</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.14.6-stable+timestamp.2016.05.10.00.21.47</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_https</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_local</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_restful</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_scheduler</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_shell</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">now</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2016, 12, 7, 7, 20, 10, 800467)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_args</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_extension</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">url</td><td style="vertical-align:top;">:</td><td><div>/init/api/generate_post</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">utcnow</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2016, 12, 7, 7, 20, 10, 800484)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi</td><td style="vertical-align:top;">:</td><td><div>&lt;gluon.main.LazyWSGI object at 0x7fad22406950&gt;</div></td></tr></table></div>'
+tRp64
+sS'frames'
+p65
+(lp66
+(dp67
+S'file'
+p68
+S'/home/DED8IRD/SENTIENCE/gluon/restricted.py'
+p69
+sS'dump'
+p70
+(dp71
+S'environment'
+p72
+S"{'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}"
+p73
+sS'ccode'
+p74
+S'<code object <module> at 0x7fad20656930, file "/...CE/applications/init/controllers/api.py", line 1>'
+p75
+ssS'lnum'
+p76
+I227
+sS'lines'
+p77
+(dp78
+I224
+S'            ccode = code'
+p79
+sI225
+S'        else:'
+p80
+sI226
+S'            ccode = compile2(code, layer)'
+p81
+sI227
+S'        exec ccode in environment'
+p82
+sI228
+S'    except HTTP:'
+p83
+sI229
+S'        raise'
+p84
+sI230
+S'    except RestrictedError:'
+p85
+sI231
+S'        # do not encapsulate (obfuscate) the original RestrictedError'
+p86
+sI222
+S'    try:'
+p87
+sI223
+S'        if isinstance(code, types.CodeType):'
+p88
+ssS'call'
+p89
+S"(code='from __future__ import unicode_literals\\nimport j...\\n\\nresponse._vars=response._caller(generate_post)\\n', environment={'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}, layer='/home/DED8IRD/SENTIENCE/applications/init/controllers/api.py')"
+p90
+sS'func'
+p91
+S'restricted'
+p92
+sa(dp93
+g68
+S'/home/DED8IRD/SENTIENCE/applications/init/controllers/api.py'
+p94
+sg70
+(dp95
+sg76
+I255
+sg77
+(dp96
+I244
+S'        else:'
+p97
+sI245
+S'            my_vote = 0'
+p98
+sI246
+S'    return dict('
+p99
+sI247
+S'        id=id,'
+p100
+sI248
+S'        my_vote=my_vote,'
+p101
+sI249
+S'        text_post=text_post,'
+p102
+sI250
+S'        image=image,'
+p103
+sI251
+S'        upvotes=upvotes,'
+p104
+sI252
+S'        created_on=created_on,'
+p105
+sI253
+S'    )'
+p106
+ssg89
+S'()'
+p107
+sg91
+S'<module>'
+p108
+sa(dp109
+g68
+S'/home/DED8IRD/SENTIENCE/gluon/globals.py'
+p110
+sg70
+(dp111
+S'self'
+p112
+S'undefined'
+p113
+sS'f'
+S'<function generate_post>'
+p114
+ssg76
+I417
+sg77
+(dp115
+I416
+S'        self._vars = None'
+p116
+sI417
+S'        self._caller = lambda f: f()'
+p117
+sI418
+S'        self._view_environment = None'
+p118
+sI419
+S'        self._custom_commit = None'
+p119
+sI420
+S'        self._custom_rollback = None'
+p120
+sI421
+S"        self.generic_patterns = ['*']"
+p121
+sI412
+S"        self.flash = ''            # used by the default view layout"
+p122
+sI413
+S'        self.meta = Storage()      # used by web2py_ajax.html'
+p123
+sI414
+S'        self.menu = []             # used by the default view layout'
+p124
+sI415
+S'        self.files = []            # used by web2py_ajax.html'
+p125
+ssg89
+S'(f=<function generate_post>)'
+p126
+sg91
+S'<lambda>'
+p127
+sa(dp128
+g68
+S'/home/DED8IRD/SENTIENCE/applications/init/controllers/api.py'
+p129
+sg70
+(dp130
+S'global generate_image'
+p131
+S'<function generate_image>'
+p132
+sS'image'
+p133
+g113
+ssg76
+I35
+sg77
+(dp134
+I32
+S'def generate_post():'
+p135
+sI33
+S'    p_id = db.shitpost.insert('
+p136
+sI34
+S'        text_post = generate_text(),'
+p137
+sI35
+S'        image = generate_image()'
+p138
+sI36
+S'    )'
+p139
+sI37
+S'    p = db.shitpost(p_id)'
+p140
+sI38
+S'    return response.json(dict(post=p))'
+p141
+sI39
+S''
+sI30
+S''
+sI31
+S''
+ssg89
+S'()'
+p142
+sg91
+S'generate_post'
+p143
+sa(dp144
+g68
+S'/home/DED8IRD/SENTIENCE/applications/init/controllers/api.py'
+p145
+sg70
+(dp146
+S'gen'
+p147
+S'<applications.init.modules.image_generator.image_generator object>'
+p148
+ssg76
+I29
+sg77
+(dp149
+I32
+S'def generate_post():'
+p150
+sI33
+S'    p_id = db.shitpost.insert('
+p151
+sI24
+S"    back_overlay_path = os.path.join(request.folder, 'static', 'images', 'src', 'back overlays')"
+p152
+sI25
+S"    overlay_path = os.path.join(request.folder, 'static', 'images', 'src')"
+p153
+sI26
+S"    vector_path = os.path.join(request.folder, 'static', 'images', 'src', 'vectors')"
+p154
+sI27
+S"    dest_path = os.path.join(request.folder, 'static', 'images', 'gen')"
+p155
+sI28
+S'    gen = image_generator(bkgd_path, back_overlay_path, overlay_path, vector_path, dest_path)'
+p156
+sI29
+S'    return gen()'
+p157
+sI30
+S''
+sI31
+S''
+ssg89
+S'()'
+p158
+sg91
+S'generate_image'
+p159
+sa(dp160
+g68
+S'/home/DED8IRD/SENTIENCE/applications/init/modules/image_generator.py'
+p161
+sg70
+(dp162
+S'self'
+p163
+S'<applications.init.modules.image_generator.image_generator object>'
+p164
+sS'self.__get_src_img'
+p165
+g113
+sS'self.overlay_path'
+p166
+S"u'/home/DED8IRD/SENTIENCE/applications/init/static/images/src'"
+p167
+sS'overlay'
+p168
+g113
+ssg76
+I35
+sg77
+(dp169
+I32
+S'            self.__paste_image(bkgd, back_overlay, 1.5/2)'
+p170
+sI33
+S''
+sI34
+S'        for i in range(random.randint(1,2)):'
+p171
+sI35
+S'            overlay = self.__get_src_img(self.overlay_path)'
+p172
+sI36
+S'            self.__resize(overlay, bkgd, random.uniform(1,4)/5)'
+p173
+sI37
+S'            overlay = self.__alter_opacity(overlay)'
+p174
+sI38
+S'            self.__paste_image(bkgd, overlay, 1)'
+p175
+sI39
+S''
+sI30
+S'            self.__resize(back_overlay, bkgd, random.uniform(2,5)/5)'
+p176
+sI31
+S'            back_overlay = self.__alter_opacity(back_overlay)'
+p177
+ssg89
+S'(self=<applications.init.modules.image_generator.image_generator object>)'
+p178
+sg91
+S'__call__'
+p179
+sa(dp180
+g68
+S'/home/DED8IRD/SENTIENCE/applications/init/modules/image_generator.py'
+p181
+sg70
+(dp182
+S'path'
+p183
+S"u'/home/DED8IRD/SENTIENCE/applications/init/static/images/src/vectors'"
+p184
+sS'global Image'
+p185
+S"<module 'PIL.Image' from '/usr/local/lib/python2.7/dist-packages/PIL/Image.pyc'>"
+p186
+sS'Image.open'
+p187
+S'<function open>'
+p188
+ssg76
+I63
+sg77
+(dp189
+I64
+S''
+sI65
+S''
+sI66
+S'    def __resize(self, img, bkgd, ratio):'
+p190
+sI67
+S'        img.thumbnail( (int(ratio*bkgd.width), \\'
+p191
+sI58
+S''
+sI59
+S'    def __get_src_img(self, path):'
+p192
+sI60
+S'        path = os.path.join(path)'
+p193
+sI61
+S'        img = random.choice(os.listdir(path))'
+p194
+sI62
+S'        path = os.path.join(path, img)'
+p195
+sI63
+S'        return Image.open(path)'
+p196
+ssg89
+S"(self=<applications.init.modules.image_generator.image_generator object>, path=u'/home/DED8IRD/SENTIENCE/applications/init/static/images/src/vectors')"
+p197
+sg91
+S'__get_src_img'
+p198
+sa(dp199
+g68
+S'/usr/local/lib/python2.7/dist-packages/PIL/Image.py'
+p200
+sg70
+(dp201
+S'fp'
+p202
+S"u'/home/DED8IRD/SENTIENCE/applications/init/static/images/src/vectors'"
+p203
+sS'filename'
+p204
+S"u'/home/DED8IRD/SENTIENCE/applications/init/static/images/src/vectors'"
+p205
+sS'global builtins'
+p206
+S"<module 'builtins' from '/usr/local/lib/python2.7/dist-packages/builtins/__init__.pyc'>"
+p207
+sS'builtins.open'
+p208
+S'<built-in function open>'
+p209
+ssg76
+I2280
+sg77
+(dp210
+I2275
+S'    elif sys.version_info >= (3, 4):'
+p211
+sI2276
+S'        from pathlib import Path'
+p212
+sI2277
+S'        if isinstance(fp, Path):'
+p213
+sI2278
+S'            filename = str(fp.resolve())'
+p214
+sI2279
+S'    if filename:'
+p215
+sI2280
+S'        fp = builtins.open(filename, "rb")'
+p216
+sI2281
+S''
+sI2282
+S'    try:'
+p217
+sI2283
+S'        fp.seek(0)'
+p218
+sI2284
+S'    except (AttributeError, io.UnsupportedOperation):'
+p219
+ssg89
+S"(fp=u'/home/DED8IRD/SENTIENCE/applications/init/static/images/src/vectors', mode='r')"
+p220
+sg91
+S'open'
+p221
+sasS'pyver'
+p222
+S'Python 2.7.6: /usr/local/bin/uwsgi (prefix: /usr)'
+p223
+sS'session'
+p224
+g63
+(S's\xf2\x08\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">auth</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">expiration</td><td style="vertical-align:top;">:</td><td><div>3600</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">hmac_key</td><td style="vertical-align:top;">:</td><td><div>4303c850-0985-47ce-9e76-58bd276563d2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_visit</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2016, 12, 7, 7, 19, 47, 276402)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remember_me</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">user</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">email</td><td style="vertical-align:top;">:</td><td><div>whoops@whoopee.goldberg</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">first_name</td><td style="vertical-align:top;">:</td><td><div>Whoopsy</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">id</td><td style="vertical-align:top;">:</td><td><div>1L</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_name</td><td style="vertical-align:top;">:</td><td><div>Goldberg</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">registration_id</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">registration_key</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">reset_password_key</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">user_groups</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">1</td><td style="vertical-align:top;">:</td><td><div>user_1</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr></table></div>'
+tRp225
+sS'etype'
+p226
+S"<type 'exceptions.IOError'>"
+p227
+sS'date'
+p228
+S'Wed Dec  7 07:20:16 2016'
+p229
+sS'response'
+p230
+g63
+(S's\xaa4\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">body</td><td style="vertical-align:top;">:</td><td><div>&lt;cStringIO.StringO object at 0x7fad22550228&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_init</td><td style="vertical-align:top;">:</td><td><div>27:3f558f35-a3d8-4479-b891-2f4077938863<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div>/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">delimiters</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>{{</div></td></tr><tr><td><div>}}</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">files</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">form_label_separator</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">formstyle</td><td style="vertical-align:top;">:</td><td><div>bootstrap3_inline</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generic_patterns</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">google_analytics_id</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">headers</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">X-Powered-By</td><td style="vertical-align:top;">:</td><td><div>web2py</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">logo</td><td style="vertical-align:top;">:</td><td><div><a class="navbar-brand" href="http://www.web2py.com/" id="web2py-logo"><b>web<span>2</span>py</b>&trade;&nbsp;</a></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">menu</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div><table><tr><td><div>Home</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/init/default/index</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>My Sites</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/site</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>This App</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>#</div></td></tr><tr><td><div><table><tr><td><div><table><tr><td><div>Design</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/design/init</div></td></tr></table></div></td></tr><tr><td><div><li class="divider"></li></div></td></tr><tr><td><div><table><tr><td><div>Controller</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/init/controllers/api.py</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>View</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/init/views/api/generate_post.html</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>DB Model</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/init/models/db.py</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Menu Model</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/init/models/menu.py</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Config.ini</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/init/private/appconfig.ini</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Layout</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/init/views/layout.html</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Stylesheet</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/init/static/css/web2py-bootstrap3.css</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Database</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/init/appadmin/index</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Errors</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/errors/init</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>About</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/about/init</div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Documentation</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>#</div></td></tr><tr><td><div><table><tr><td><div><table><tr><td><div>Online book</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book</div></td></tr></table></div></td></tr><tr><td><div><li class="divider"></li></div></td></tr><tr><td><div><table><tr><td><div>Preface</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/00</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Introduction</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/01</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Python</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/02</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Overview</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/03</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>The Core</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/04</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>The Views</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/05</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Database</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/06</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Forms and Validators</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/07</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Email and SMS</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/08</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Access Control</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/09</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Services</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/10</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Ajax Recipes</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/11</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Components and Plugins</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/12</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Deployment Recipes</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/13</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Other Recipes</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/14</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Helping web2py</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/15</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Buy web2py\'s book</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://stores.lulu.com/web2py</div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">meta</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">author</td><td style="vertical-align:top;">:</td><td><div>Your Name &lt;you@example.com&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">description</td><td style="vertical-align:top;">:</td><td><div>a cool new app</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generator</td><td style="vertical-align:top;">:</td><td><div>Web2py Web Framework</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">keywords</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>web2py</div></td></tr><tr><td><div>python</div></td></tr><tr><td><div>framework</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">models_to_run</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>^\\w+\\.py$</div></td></tr><tr><td><div>^api/\\w+\\.py$</div></td></tr><tr><td><div>^api/generate_post/\\w+\\.py$</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">postprocessing</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_client</td><td style="vertical-align:top;">:</td><td><div>169.233.230.70</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_compression_level</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_expires</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_data_name</td><td style="vertical-align:top;">:</td><td><div>session_data_init</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_db_record_id</td><td style="vertical-align:top;">:</td><td><div>27L</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_db_table</td><td style="vertical-align:top;">:</td><td><div>&lt;Table web2py_session_init (id, locked, client_ip, created_datetime, modified_datetime, unique_key, session_data)&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_db_unique_key</td><td style="vertical-align:top;">:</td><td><div>3f558f35-a3d8-4479-b891-2f4077938863</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_hash</td><td style="vertical-align:top;">:</td><td><div>c27bef41c4844f6af12ac71e2ee71571</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id</td><td style="vertical-align:top;">:</td><td><div>27:3f558f35-a3d8-4479-b891-2f4077938863</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_name</td><td style="vertical-align:top;">:</td><td><div>session_id_init</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_masterapp</td><td style="vertical-align:top;">:</td><td><div>init</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_new</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_storage_type</td><td style="vertical-align:top;">:</td><td><div>db</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">status</td><td style="vertical-align:top;">:</td><td><div>200</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">subtitle</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">title</td><td style="vertical-align:top;">:</td><td><div>Init</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">view</td><td style="vertical-align:top;">:</td><td><div>api/generate_post.html</div></td></tr></table></div>'
+tRp231
+sS'locals'
+p232
+(dp233
+S'fp'
+p234
+S"u'/home/DED8IRD/SENTIENCE/applications/init/static/images/src/vectors'"
+p235
+sS'mode'
+p236
+S"'r'"
+p237
+sg36
+S"u'/home/DED8IRD/SENTIENCE/applications/init/static/images/src/vectors'"
+p238
+sssS'traceback'
+p239
+S'Traceback (most recent call last):\n  File "/home/DED8IRD/SENTIENCE/gluon/restricted.py", line 227, in restricted\n    exec ccode in environment\n  File "/home/DED8IRD/SENTIENCE/applications/init/controllers/api.py", line 255, in <module>\n  File "/home/DED8IRD/SENTIENCE/gluon/globals.py", line 417, in <lambda>\n    self._caller = lambda f: f()\n  File "/home/DED8IRD/SENTIENCE/applications/init/controllers/api.py", line 35, in generate_post\n    image = generate_image()\n  File "/home/DED8IRD/SENTIENCE/applications/init/controllers/api.py", line 29, in generate_image\n    return gen()\n  File "applications/init/modules/image_generator.py", line 35, in __call__\n    overlay = self.__get_src_img(self.overlay_path)\n  File "applications/init/modules/image_generator.py", line 63, in __get_src_img\n    return Image.open(path)\n  File "/usr/local/lib/python2.7/dist-packages/PIL/Image.py", line 2280, in open\n    fp = builtins.open(filename, "rb")\nIOError: [Errno 21] Is a directory: u\'/home/DED8IRD/SENTIENCE/applications/init/static/images/src/vectors\'\n'
+p240
+s.

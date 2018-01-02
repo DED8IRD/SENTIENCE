@@ -19,6 +19,19 @@ def create_post(text_post, date):
     return Shitpost.objects.create(text_post=text_post, image='img.png', created_on=time)
 
 
+class ShitpostGenerateFuncTests(TestCase):
+
+    def test_generate(self):
+        """
+        Tests that shitpost:generate_post() adds post to db.
+        """
+        response = self.client.get(reverse('shitposts:generate'))
+        self.assertEqual(response.status_code, 200)        
+        response = self.client.get(reverse('shitposts:index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.context['post_list'])
+
+
 class ShitpostIndexViewTests(TestCase):
 
     def test_no_post(self):
@@ -50,7 +63,6 @@ class ShitpostIndexViewTests(TestCase):
         self.assertContains(response, response_404_msg)        
         self.assertQuerysetEqual(response.context['post_list'], [])
 
-
     def test_past_and_future_posts(self):
         """
         Only posts published in the past are displayed when both past and future posts exist.
@@ -62,7 +74,6 @@ class ShitpostIndexViewTests(TestCase):
             response.context['post_list'],
             ['<Shitpost: Old post>']
         )
-
 
     def test_mult_past_posts(self):
         """
