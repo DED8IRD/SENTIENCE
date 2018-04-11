@@ -1,0 +1,10 @@
+*.pyc
+*~
+__pycache__
+senv
+db.sqlite3
+/staticfiles
+/media
+*.csv
+/static/images
+.DS_Store
