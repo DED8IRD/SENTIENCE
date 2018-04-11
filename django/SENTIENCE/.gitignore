@@ -8,3 +8,4 @@ db.sqlite3
 *.csv
 /static/images
 .DS_Store
+../Pipfile*
