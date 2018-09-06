@@ -9,10 +9,11 @@ Python 2.7 compatible.
 '''
 
 from __future__ import unicode_literals
+from util import keys
 import requests, json, datetime, csv, time, os, tempfile, shutil
 
-app_id = "391914271198878"
-app_secret = "650dfff338ba8a121b702e1d7e07b95a" 
+app_id = keys.APP_ID
+app_secret = keys.APP_SECRET
 access_token = app_id + "|" + app_secret
 pages = [line.strip() for line in open("page_names", 'r')]
 
