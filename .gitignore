@@ -1,4 +1,5 @@
 secrets*
+keys*
 web2py/start/.idea/
 web2py/start/databases/
 web2py/start/errors/
