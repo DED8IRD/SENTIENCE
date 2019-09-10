@@ -1,0 +1,3 @@
+# Facebook app keys
+APP_ID = "391914271198878"
+APP_SECRET = "650dfff338ba8a121b702e1d7e07b95a" 
